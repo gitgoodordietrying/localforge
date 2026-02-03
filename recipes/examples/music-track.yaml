@@ -1,0 +1,101 @@
+# Music Track Generation
+# Generates background music using local MusicGen + FFmpeg processing.
+# Demonstrates: Ollama prompt building → music generation → audio normalization → format conversion
+
+name: "music-track"
+version: "1.0"
+description: "Generate game background music track"
+
+inputs:
+  - name: "genre"
+    type: "string"
+    required: true
+    description: "Music genre (e.g., 'orchestral', 'electronic', 'chiptune')"
+
+  - name: "mood"
+    type: "string"
+    required: true
+    description: "Mood (e.g., 'epic', 'peaceful', 'tense')"
+
+  - name: "duration"
+    type: "number"
+    default: 30
+    description: "Duration in seconds"
+
+  - name: "model"
+    type: "string"
+    default: "small"
+    description: "MusicGen model size: small, medium, large"
+
+  - name: "output_path"
+    type: "path"
+    required: true
+    description: "Where to save the music (WAV)"
+
+config:
+  max_iterations: 2
+  timeout_minutes: 15
+
+steps:
+  - id: "build_prompt"
+    name: "Build music prompt"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      system: |
+        You create concise music generation prompts.
+        Output ONLY the prompt, nothing else.
+        Focus on: genre, mood, instruments, tempo, style.
+        Keep it under 50 words.
+      prompt: |
+        Create a music generation prompt for:
+        Genre: {{inputs.genre}}
+        Mood: {{inputs.mood}}
+        Context: video game background music
+
+  - id: "generate"
+    name: "Generate music"
+    tool: "musicgen"
+    action: "generate"
+    inputs:
+      prompt: "{{steps.build_prompt.outputs.response}}"
+      duration: "{{inputs.duration}}"
+      model: "{{inputs.model}}"
+      output: "{{temp_dir}}/raw_music.wav"
+
+  - id: "normalize"
+    name: "Normalize audio"
+    tool: "ffmpeg"
+    action: "normalize"
+    inputs:
+      input: "{{steps.generate.outputs.output}}"
+      output: "{{temp_dir}}/normalized.wav"
+
+  - id: "convert_ogg"
+    name: "Convert to OGG"
+    tool: "ffmpeg"
+    action: "convert"
+    inputs:
+      input: "{{steps.normalize.outputs.output}}"
+      output: "{{temp_dir}}/track.ogg"
+
+  - id: "finalize"
+    name: "Save files"
+    tool: "file_ops"
+    action: "copy"
+    inputs:
+      source: "{{steps.normalize.outputs.output}}"
+      destination: "{{inputs.output_path}}"
+
+cleanup:
+  on_success:
+    - action: "delete"
+      path: "{{temp_dir}}"
+  on_failure:
+    - action: "preserve"
+      path: "{{temp_dir}}"
+
+# Usage:
+# python -m localforge run recipes/examples/music-track.yaml \
+#   --input "genre=orchestral" --input "mood=epic" \
+#   --input "output_path=./epic_theme.wav" --auto-approve

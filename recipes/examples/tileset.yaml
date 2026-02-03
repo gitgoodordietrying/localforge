@@ -1,0 +1,142 @@
+# Seamless Tileset Generation
+# Generates tileable textures for 2D games with validation and refinement.
+# Demonstrates: refinement loops, seamless validation, tile preview
+
+name: "tileset-basic"
+version: "1.0"
+description: "Generate seamless tileable game textures"
+
+inputs:
+  - name: "theme"
+    type: "string"
+    required: true
+    description: "Tile theme (e.g., 'grass', 'stone', 'water')"
+
+  - name: "style"
+    type: "string"
+    default: "pixel art, 16-bit style, game texture, clean pixels"
+    description: "Art style"
+
+  - name: "tile_size"
+    type: "number"
+    default: 32
+    description: "Tile dimensions in pixels (square)"
+
+  - name: "output_path"
+    type: "path"
+    required: true
+    description: "Where to save the tile"
+
+  - name: "preview_path"
+    type: "path"
+    required: false
+    default: ""
+    description: "Where to save the 3x3 tiled preview"
+
+  - name: "seamless_strength"
+    type: "string"
+    default: "high"
+    description: "Seamlessness enforcement: low, medium, high"
+
+config:
+  max_iterations: 3
+  timeout_minutes: 15
+
+steps:
+  - id: "build_prompt"
+    name: "Enhance texture description"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      system: |
+        You enhance texture descriptions for image generation.
+        Output ONLY 3-5 descriptive words, nothing else.
+      prompt: "Enhance this texture theme with 3-5 descriptive words: {{inputs.theme}}"
+
+  - id: "generate"
+    name: "Generate base texture"
+    tool: "sd_client"
+    action: "txt2img"
+    inputs:
+      prompt: "{{steps.build_prompt.outputs.response}} texture, {{inputs.style}}, top view, seamless pattern, game texture, uniform lighting"
+      negative_prompt: "text, watermark, frame, border, grid, 3d render, perspective, objects"
+      width: 512
+      height: 512
+      steps: 30
+      cfg_scale: 7.0
+      tiling: true
+
+  - id: "resize"
+    name: "Resize to tile size"
+    tool: "image_processor"
+    action: "resize"
+    inputs:
+      input: "{{steps.generate.outputs.primary}}"
+      output: "{{temp_dir}}/resized.png"
+      width: "{{inputs.tile_size}}"
+      height: "{{inputs.tile_size}}"
+      method: "lanczos"
+
+  - id: "validate_seamless"
+    name: "Validate seamlessness"
+    tool: "validator"
+    action: "check_tileset"
+    inputs:
+      image: "{{steps.resize.outputs.output}}"
+      checks:
+        seamless: true
+        seamless_threshold: "{{inputs.seamless_strength}}"
+        min_size: 16
+    gate: true
+    on_failure: "refine"
+    refinement:
+      steps:
+        - id: "make_seamless"
+          name: "Apply seamless correction"
+          tool: "image_processor"
+          action: "make_seamless"
+          inputs:
+            input: "{{steps.resize.outputs.output}}"
+            output: "{{steps.resize.outputs.output}}"
+            blend_width: 12
+
+  - id: "preview"
+    name: "Generate tiled preview"
+    tool: "image_processor"
+    action: "tile_preview"
+    inputs:
+      input: "{{steps.resize.outputs.output}}"
+      output: "{{temp_dir}}/preview.png"
+      grid_size: 3
+
+  - id: "finalize_tile"
+    name: "Save final tile"
+    tool: "file_ops"
+    action: "copy"
+    inputs:
+      source: "{{steps.resize.outputs.output}}"
+      destination: "{{inputs.output_path}}"
+
+  - id: "finalize_preview"
+    name: "Save preview"
+    tool: "file_ops"
+    action: "copy"
+    inputs:
+      source: "{{steps.preview.outputs.output}}"
+      destination: "{{inputs.preview_path}}"
+
+cleanup:
+  on_success:
+    - action: "delete"
+      path: "{{temp_dir}}"
+  on_failure:
+    - action: "preserve"
+      path: "{{temp_dir}}"
+      reason: "debug"
+
+# Usage:
+# python -m localforge run recipes/examples/tileset.yaml \
+#   --input "theme=grass" \
+#   --input "output_path=./grass_tile.png" \
+#   --input "preview_path=./grass_preview.png" \
+#   --auto-approve

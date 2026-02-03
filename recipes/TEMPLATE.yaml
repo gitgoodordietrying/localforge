@@ -1,0 +1,125 @@
+# Recipe Template
+# Copy this file and modify to create new workflows.
+
+name: "workflow-name"
+version: "1.0"
+description: "What this workflow produces"
+
+# INPUTS: What the workflow needs from the user
+inputs:
+  - name: "required_input"
+    type: "string"        # string, number, path
+    required: true
+    description: "What this input is for"
+
+  - name: "optional_input"
+    type: "string"
+    default: "default value"
+    description: "Optional with default"
+
+# OUTPUTS: What the workflow produces
+outputs:
+  - name: "main_output"
+    type: "path"
+    description: "The primary output"
+
+# CONFIG: Workflow settings
+config:
+  max_iterations: 3       # Max refinement loop iterations
+  timeout_minutes: 10
+
+# STEPS: The actual work
+steps:
+  # --- OLLAMA: Generate text with local LLM ---
+  - id: "ollama_step"
+    name: "Generate text with Ollama"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      system: "Optional system prompt"
+      prompt: "Your prompt here. Use {{inputs.required_input}} for variables."
+
+  # --- SD_CLIENT: Generate images ---
+  - id: "sd_step"
+    name: "Generate image with SD"
+    tool: "sd_client"
+    action: "txt2img"      # or img2img
+    inputs:
+      prompt: "{{steps.ollama_step.outputs.sd_prompt}}"
+      negative_prompt: "blurry, low quality"
+      width: 512
+      height: 512
+      steps: 20
+      cfg_scale: 7.0
+
+  # --- IMAGE_PROCESSOR: Process images ---
+  - id: "process_step"
+    name: "Process image"
+    tool: "image_processor"
+    action: "remove_bg"    # or resize, make_seamless, tile_preview, etc.
+    inputs:
+      input: "{{steps.sd_step.outputs.primary}}"
+      output: "{{temp_dir}}/processed.png"
+      method: "auto"
+
+  # --- VALIDATOR: Check quality ---
+  - id: "validate_step"
+    name: "Validate output"
+    tool: "validator"
+    action: "check_image"
+    inputs:
+      image: "{{steps.process_step.outputs.output}}"
+      checks:
+        has_transparency: true
+        min_width: 64
+
+  # --- FILE_OPS: File operations ---
+  - id: "save_step"
+    name: "Save final output"
+    tool: "file_ops"
+    action: "copy"
+    inputs:
+      source: "{{steps.process_step.outputs.output}}"
+      destination: "{{inputs.required_input}}"
+
+# CLEANUP: What to do after workflow
+cleanup:
+  on_success:
+    - action: "delete"
+      path: "{{temp_dir}}"
+  on_failure:
+    - action: "preserve"
+      path: "{{temp_dir}}"
+      reason: "debug"
+
+# VARIABLE REFERENCE:
+# {{inputs.name}}                    - User input value
+# {{steps.step_id.outputs.name}}     - Step output
+# {{config.key}}                     - Recipe config value
+# {{templates.key}}                  - Template value
+# {{temp_dir}}                       - Temp directory for this run
+# {{workflow.run_id}}                - Unique run ID
+# {{workflow.name}}                  - Workflow name
+# {{timestamp}}                      - Current ISO timestamp
+#
+# AVAILABLE TOOLS:
+# - ollama: generate
+# - sd_client: txt2img, img2img, get_models
+# - image_processor: remove_bg, resize, batch_remove_bg, make_seamless,
+#                    tile_preview, create_idle_animation,
+#                    create_directional_sheet, assemble_sheet
+# - validator: check_image, check_tileset, check_sprites
+# - file_ops: copy, move, delete, mkdir, copy_multiple, list
+# - batch: foreach
+# - musicgen: generate
+# - acestep: generate
+# - ffmpeg: convert, normalize, loop, trim, get_duration
+# - blender: render, render_animation, create_primitive, create_text_3d,
+#            generate_texture, render_isometric, create_dice, create_dice_set
+# - script: run
+#
+# ERROR HANDLING:
+# on_failure: "abort"   - Stop workflow (default)
+# on_failure: "skip"    - Log and continue
+# on_failure: "retry"   - Retry N times (set retry_count)
+# on_failure: "refine"  - Enter refinement loop

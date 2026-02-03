@@ -1,0 +1,37 @@
+# LocalForge Configuration
+#
+# Copy this file to localforge.yaml and adjust for your setup.
+# Or run `python -m localforge init` to generate it automatically.
+
+workspace: ~/localforge-workspace
+output_dir: ~/localforge-workspace/output
+run_dir: ~/localforge-workspace/runs
+
+services:
+  ollama:
+    host: http://localhost:11434
+    default_model: llama3.2:3b
+    timeout: 60
+
+  sd:
+    host: http://localhost:7860
+    timeout: 120
+
+  blender:
+    # path: /usr/bin/blender
+    # path: /Applications/Blender.app/Contents/MacOS/Blender
+    # path: C:\Program Files\Blender Foundation\Blender 4.2\blender.exe
+    path: null  # auto-detect
+
+  ffmpeg:
+    path: ffmpeg  # uses PATH
+
+  # Optional: MusicGen and ACE-Step require separate venv setup
+  # musicgen:
+  #   venv_dir: /path/to/audiocraft
+  # acestep:
+  #   venv_dir: /path/to/ace-step
+
+persistence:
+  enabled: true
+  db_path: ~/.localforge/runs.db

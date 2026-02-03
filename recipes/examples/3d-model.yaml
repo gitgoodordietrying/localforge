@@ -1,0 +1,48 @@
+# 3D Model Generation
+# Creates a 3D primitive and exports it using Blender.
+# Demonstrates: Blender headless automation → 3D export
+
+name: "3d-model"
+version: "1.0"
+description: "Generate a 3D model primitive with Blender"
+
+inputs:
+  - name: "shape"
+    type: "string"
+    required: true
+    description: "Shape to create: cube, sphere, cylinder, cone, torus, plane"
+
+  - name: "output_path"
+    type: "path"
+    required: true
+    description: "Where to save the model (.glb, .fbx, or .obj)"
+
+  - name: "size"
+    type: "number"
+    default: 1.0
+    description: "Scale of the model"
+
+  - name: "subdivisions"
+    type: "number"
+    default: 2
+    description: "Smoothness level (0=flat, 3=very smooth)"
+
+steps:
+  - id: "create"
+    name: "Create 3D model"
+    tool: "blender"
+    action: "create_primitive"
+    inputs:
+      shape: "{{inputs.shape}}"
+      output_path: "{{inputs.output_path}}"
+      size: "{{inputs.size}}"
+      subdivisions: "{{inputs.subdivisions}}"
+
+cleanup:
+  on_success:
+    - action: "delete"
+      path: "{{temp_dir}}"
+
+# Usage:
+# python -m localforge run recipes/examples/3d-model.yaml \
+#   --input "shape=sphere" --input "output_path=./sphere.glb" --auto-approve

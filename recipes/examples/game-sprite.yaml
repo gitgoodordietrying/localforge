@@ -1,0 +1,113 @@
+# Game Sprite Generation
+# Generates a pixel art game sprite with background removal.
+# Demonstrates: Ollama prompt engineering → SD generation → image processing → validation
+
+name: "game-sprite"
+version: "1.0"
+description: "Generate a pixel art game sprite with background removal"
+
+inputs:
+  - name: "description"
+    type: "string"
+    required: true
+    description: "What the sprite should depict (e.g., 'spaceship', 'asteroid')"
+
+  - name: "style"
+    type: "string"
+    default: "pixel art, 8-bit retro arcade style, limited color palette, clean pixels"
+    description: "Style prompt"
+
+  - name: "width"
+    type: "number"
+    default: 64
+    description: "Sprite width in pixels"
+
+  - name: "height"
+    type: "number"
+    default: 64
+    description: "Sprite height in pixels"
+
+  - name: "output_path"
+    type: "path"
+    required: true
+    description: "Where to save the final sprite"
+
+  - name: "candidates"
+    type: "number"
+    default: 1
+    description: "Number of variations to generate"
+
+config:
+  max_iterations: 3
+  timeout_minutes: 10
+
+steps:
+  # Step 1: Use local LLM to build an optimized SD prompt
+  - id: "build_prompt"
+    name: "Build optimized SD prompt"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      system: "You are a Stable Diffusion prompt engineer. Output ONLY the prompt text, no explanation."
+      prompt: "Create a Stable Diffusion prompt for a game sprite. Subject: {{inputs.description}}. Style: {{inputs.style}}. Requirements: black background, centered, clean edges, no text. Output only the prompt."
+
+  # Step 2: Generate image with SD
+  - id: "generate"
+    name: "Generate sprite"
+    tool: "sd_client"
+    action: "txt2img"
+    inputs:
+      prompt: "{{steps.build_prompt.outputs.sd_prompt}}, black background, game sprite, centered"
+      negative_prompt: "blurry, low quality, text, watermark, frame, border, multiple objects, realistic"
+      width: "{{inputs.width}}"
+      height: "{{inputs.height}}"
+      steps: 25
+      cfg_scale: 7.5
+      sampler_name: "DPM++ 2M"
+      batch_size: "{{inputs.candidates}}"
+
+  # Step 3: Remove background
+  - id: "remove_bg"
+    name: "Remove background"
+    tool: "image_processor"
+    action: "remove_bg"
+    inputs:
+      input: "{{steps.generate.outputs.primary}}"
+      output: "{{temp_dir}}/processed.png"
+      method: "auto"
+      tolerance: 40
+
+  # Step 4: Validate
+  - id: "validate"
+    name: "Validate sprite"
+    tool: "validator"
+    action: "check_image"
+    inputs:
+      image: "{{steps.remove_bg.outputs.output}}"
+      checks:
+        has_transparency: true
+        min_width: 32
+
+  # Step 5: Save
+  - id: "finalize"
+    name: "Save final sprite"
+    tool: "file_ops"
+    action: "copy"
+    inputs:
+      source: "{{steps.remove_bg.outputs.output}}"
+      destination: "{{inputs.output_path}}"
+
+cleanup:
+  on_success:
+    - action: "delete"
+      path: "{{temp_dir}}"
+  on_failure:
+    - action: "preserve"
+      path: "{{temp_dir}}"
+      reason: "debug"
+
+# Usage:
+# python -m localforge run recipes/examples/game-sprite.yaml \
+#   --input "description=spaceship" \
+#   --input "output_path=./spaceship.png" \
+#   --auto-approve

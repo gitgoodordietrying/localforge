@@ -1,0 +1,16 @@
+# Cursor Rules — LocalForge Integration
+
+## Local Workflow Runner
+This project uses LocalForge for multi-step pipelines.
+Run `python -m localforge run <recipe> --auto-approve` for automated workflows.
+
+## Available Commands
+- `python -m localforge list` — List available recipes
+- `python -m localforge health` — Check service status
+- `python -m localforge run <recipe> --list-inputs` — See recipe inputs
+
+## Key Recipes
+- `recipes/examples/game-sprite.yaml` — Generate sprites
+- `recipes/examples/tileset.yaml` — Generate tileable textures
+- `recipes/examples/music-track.yaml` — Generate music
+- `recipes/examples/3d-model.yaml` — Generate 3D models

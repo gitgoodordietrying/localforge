@@ -1,0 +1,43 @@
+# Hello Ollama — Minimal getting-started recipe
+# Tests that Ollama is working and demonstrates basic variable resolution.
+
+name: "hello-ollama"
+version: "1.0"
+description: "Generate text with a local Ollama model"
+
+inputs:
+  - name: "prompt"
+    type: "string"
+    required: true
+    description: "What to ask the local LLM"
+
+  - name: "model"
+    type: "string"
+    default: "llama3.2:3b"
+    description: "Ollama model to use"
+
+steps:
+  - id: "generate"
+    name: "Generate with Ollama"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      model: "{{inputs.model}}"
+      prompt: "{{inputs.prompt}}"
+
+  - id: "save"
+    name: "Save response"
+    tool: "file_ops"
+    action: "mkdir"
+    inputs:
+      path: "{{temp_dir}}/output"
+
+cleanup:
+  on_success:
+    - action: "preserve"
+      path: "{{temp_dir}}"
+      reason: "output"
+
+# Usage:
+# python -m localforge run recipes/getting-started/hello-ollama.yaml \
+#   --input prompt="Tell me a joke" --auto-approve

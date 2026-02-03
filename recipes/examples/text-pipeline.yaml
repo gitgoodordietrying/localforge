@@ -1,0 +1,75 @@
+# Text Processing Pipeline
+# Demonstrates a pure-Ollama pipeline with no external services needed.
+# Shows multi-step LLM chaining where each step builds on the previous.
+
+name: "text-pipeline"
+version: "1.0"
+description: "Multi-step text processing with local LLMs"
+
+inputs:
+  - name: "topic"
+    type: "string"
+    required: true
+    description: "Topic to write about"
+
+  - name: "style"
+    type: "string"
+    default: "professional"
+    description: "Writing style: professional, casual, technical, creative"
+
+  - name: "output_dir"
+    type: "path"
+    default: "./text-output"
+    description: "Directory for output files"
+
+steps:
+  # Step 1: Generate outline
+  - id: "outline"
+    name: "Generate outline"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      system: "You are a content strategist. Create concise outlines."
+      prompt: "Create a 5-point outline for an article about: {{inputs.topic}}. Style: {{inputs.style}}. Output only the outline."
+
+  # Step 2: Write draft based on outline
+  - id: "draft"
+    name: "Write draft"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      system: "You are a writer. Write clear, engaging content."
+      prompt: |
+        Write a short article based on this outline:
+        {{steps.outline.outputs.response}}
+
+        Style: {{inputs.style}}
+        Keep it under 500 words.
+
+  # Step 3: Generate summary
+  - id: "summary"
+    name: "Generate summary"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      system: "Summarize text concisely in 2-3 sentences."
+      prompt: "Summarize this article:\n{{steps.draft.outputs.response}}"
+
+  # Step 4: Save outputs
+  - id: "save_dir"
+    name: "Create output directory"
+    tool: "file_ops"
+    action: "mkdir"
+    inputs:
+      path: "{{inputs.output_dir}}"
+
+cleanup:
+  on_success:
+    - action: "preserve"
+      path: "{{temp_dir}}"
+      reason: "output"
+
+# Usage:
+# python -m localforge run recipes/examples/text-pipeline.yaml \
+#   --input "topic=artificial intelligence in healthcare" \
+#   --auto-approve
