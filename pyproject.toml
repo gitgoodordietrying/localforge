@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "localforge"
@@ -49,4 +49,4 @@ Issues = "https://github.com/gitgoodordietrying/localforge/issues"
 Repository = "https://github.com/gitgoodordietrying/localforge"
 
 [tool.setuptools.packages.find]
-include = ["localforge*", "engine*", "tools*", "clients*", "scripts*"]
+include = ["localforge*"]
