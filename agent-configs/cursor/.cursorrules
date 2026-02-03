@@ -1,20 +1,23 @@
 # Cursor Rules — LocalForge Integration
 
-## Local Workflow Runner
+## Local AI Orchestrator
 This project uses LocalForge for multi-step pipelines that chain local AI services.
 Run `python -m localforge run <recipe> --auto-approve` for automated workflows.
 
 ## Available Commands
 - `python -m localforge list` — List available recipes
 - `python -m localforge health` — Check service status
+- `python -m localforge system` — Hardware profile and model recommendations
 - `python -m localforge run <recipe> --list-inputs` — See recipe inputs
 - `python -m localforge run <recipe> --input key=value --auto-approve` — Execute
 
 ## When to Use LocalForge
-- Image generation (sprites, tilesets, textures) → SD recipes
+- Code review and analysis → Ollama recipes
+- Data extraction and text processing → Ollama recipes
+- Batch image operations (resize, convert) → Pillow recipes
+- Image generation (sprites, textures) → SD recipes
 - Audio/music generation → audio recipes
 - 3D models and rendering → Blender recipes
-- Bulk text processing → Ollama recipes
 - Multi-step pipelines → write a custom recipe
 
 ## Key Recipes
@@ -22,15 +25,18 @@ Run `python -m localforge run <recipe> --auto-approve` for automated workflows.
 |--------|----------|
 | `recipes/getting-started/hello-localforge.yaml` | None (engine test) |
 | `recipes/getting-started/hello-ollama.yaml` | Ollama |
-| `recipes/getting-started/hello-sd.yaml` | SD WebUI |
-| `recipes/examples/game-sprite.yaml` | Ollama + SD |
-| `recipes/examples/tileset.yaml` | Ollama + SD |
-| `recipes/examples/music-track.yaml` | Ollama + MusicGen |
-| `recipes/examples/3d-model.yaml` | Blender |
+| `recipes/examples/code-review.yaml` | Ollama |
+| `recipes/examples/data-extract.yaml` | Ollama |
+| `recipes/examples/batch-resize.yaml` | None (Pillow) |
+| `recipes/examples/text-pipeline.yaml` | Ollama |
+| `recipes/domains/game-dev/game-sprite.yaml` | Ollama + SD |
+| `recipes/domains/game-dev/tileset.yaml` | Ollama + SD |
+| `recipes/domains/game-dev/music-track.yaml` | Ollama + MusicGen |
+| `recipes/domains/game-dev/3d-model.yaml` | Blender |
 
 ## Creating Recipes
 Copy `recipes/TEMPLATE.yaml`. The engine auto-discovers tools from `tools/`.
 See `docs/RECIPE-AUTHORING.md` for the full format reference.
 
 ## Token Savings
-Delegate grunt work (prompt engineering, classification, summarization) to local Ollama models via recipes. Reserve the paid agent for reasoning and orchestration.
+Delegate grunt work (prompt engineering, classification, summarization, data extraction) to local Ollama models via recipes. Reserve the paid agent for reasoning and orchestration.

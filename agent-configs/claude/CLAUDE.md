@@ -1,13 +1,15 @@
 # CLAUDE.md — LocalForge Integration
 
 ## What This Is
-LocalForge is a local workflow orchestrator. It runs multi-step YAML pipelines using local AI services (Ollama, Stable Diffusion, Blender, FFmpeg) so you don't spend tokens on grunt work.
+LocalForge is a local-first AI orchestrator. It runs multi-step YAML pipelines using local services (Ollama, Stable Diffusion, Blender, FFmpeg, Pillow, any CLI tool) so you don't spend tokens on grunt work.
 
 ## When to Use It
-- Generating images (sprites, tilesets, textures) — use SD recipes
-- Generating music or sound effects — use audio recipes
-- Bulk text processing (summarization, classification) — use Ollama recipes
-- 3D model creation — use Blender recipes
+- Bulk text processing (summarization, classification, extraction) — Ollama recipes
+- Code review and analysis — Ollama recipes
+- Image processing (resize, convert, batch operations) — Pillow recipes
+- Image generation (sprites, textures, art) — SD recipes
+- Audio/music generation — audio recipes
+- 3D model creation — Blender recipes
 - Any multi-step pipeline that chains local tools
 
 ## Commands
@@ -15,6 +17,7 @@ LocalForge is a local workflow orchestrator. It runs multi-step YAML pipelines u
 # Check what's available
 python -m localforge health          # Which services are running
 python -m localforge list            # Available recipes
+python -m localforge system          # Hardware profile and model recommendations
 
 # Run a recipe
 python -m localforge run <recipe.yaml> \
@@ -26,22 +29,25 @@ python -m localforge run <recipe.yaml> --list-inputs
 
 ## Example Workflows
 ```bash
-# Generate a game sprite
-python -m localforge run recipes/examples/game-sprite.yaml \
+# Code review (Ollama only)
+python -m localforge run recipes/examples/code-review.yaml \
+  --input "file_path=./src/main.py" --auto-approve
+
+# Data extraction (Ollama only)
+python -m localforge run recipes/examples/data-extract.yaml \
+  --input "topic=contact info" --input "text=Call John at 555-0123" --auto-approve
+
+# Batch image resize (no services needed)
+python -m localforge run recipes/examples/batch-resize.yaml \
+  --input "input_dir=./photos" --input "output_dir=./thumbs" --auto-approve
+
+# Text processing pipeline
+python -m localforge run recipes/examples/text-pipeline.yaml \
+  --input "topic=artificial intelligence" --auto-approve
+
+# Game sprite generation (Ollama + SD)
+python -m localforge run recipes/domains/game-dev/game-sprite.yaml \
   --input "description=spaceship" --input "output_path=./ship.png" --auto-approve
-
-# Generate a tileable texture
-python -m localforge run recipes/examples/tileset.yaml \
-  --input "theme=grass" --input "output_path=./grass.png" --auto-approve
-
-# Generate background music
-python -m localforge run recipes/examples/music-track.yaml \
-  --input "genre=orchestral" --input "mood=epic" \
-  --input "output_path=./theme.wav" --auto-approve
-
-# Generate a 3D model
-python -m localforge run recipes/examples/3d-model.yaml \
-  --input "description=treasure chest" --input "output_path=./chest.glb" --auto-approve
 ```
 
 ## Token Savings Strategy

@@ -1,0 +1,97 @@
+# Code Review Pipeline
+# Ollama-only recipe — reviews code files using a local LLM.
+# Demonstrates: multi-step LLM chaining, developer workflow, no paid API needed.
+
+name: "code-review"
+version: "1.0"
+description: "Review a code file for bugs, style issues, and improvements using local LLM"
+
+inputs:
+  - name: "file_path"
+    type: "path"
+    required: true
+    description: "Path to the code file to review"
+
+  - name: "language"
+    type: "string"
+    default: "auto"
+    description: "Programming language (auto-detected if 'auto')"
+
+  - name: "focus"
+    type: "string"
+    default: "bugs, security, readability"
+    description: "What to focus the review on"
+
+  - name: "model"
+    type: "string"
+    default: "llama3.2:3b"
+    description: "Ollama model to use"
+
+  - name: "output_path"
+    type: "path"
+    default: "./review.md"
+    description: "Where to save the review"
+
+steps:
+  - id: "analyze"
+    name: "Analyze code structure"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      model: "{{inputs.model}}"
+      system: "You are a code reviewer. Analyze code structure concisely."
+      prompt: |
+        Analyze this {{inputs.language}} code file at {{inputs.file_path}}.
+        List: number of functions, classes, imports, and overall structure.
+        Be brief — bullet points only.
+
+  - id: "review"
+    name: "Perform detailed review"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      model: "{{inputs.model}}"
+      system: "You are a senior code reviewer. Be specific and actionable."
+      prompt: |
+        Review this code. Focus on: {{inputs.focus}}
+
+        Code structure:
+        {{steps.analyze.outputs.response}}
+
+        For each issue found, provide:
+        1. Severity (critical/warning/info)
+        2. Location (function or line description)
+        3. Problem description
+        4. Suggested fix
+
+  - id: "summarize"
+    name: "Generate review summary"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      model: "{{inputs.model}}"
+      system: "Summarize code reviews into an executive summary."
+      prompt: |
+        Summarize this code review into 3-5 bullet points:
+        {{steps.review.outputs.response}}
+
+        Start with overall assessment (pass/needs-work/critical-issues).
+
+  - id: "save_output"
+    name: "Create output directory"
+    tool: "file_ops"
+    action: "mkdir"
+    inputs:
+      path: "{{temp_dir}}/review"
+
+cleanup:
+  on_success:
+    - action: "preserve"
+      path: "{{temp_dir}}"
+      reason: "output"
+
+# Usage:
+# python -m localforge run recipes/examples/code-review.yaml \
+#   --input "file_path=./src/main.py" \
+#   --input "focus=security, error handling" \
+#   --auto-approve

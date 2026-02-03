@@ -1,0 +1,61 @@
+# Model VRAM profiles — derived from real-world profiling.
+# Used by SystemInfo to recommend models based on available hardware.
+
+ollama:
+  llama3.2:3b:
+    vram_gb: 2.5
+    tasks: [general, chat, classification]
+    quality: basic
+    description: "Fast, lightweight model for simple tasks"
+
+  mistral:7b:
+    vram_gb: 5.0
+    tasks: [general, chat, summarization, translation]
+    quality: good
+    description: "Strong general-purpose model"
+
+  llama3.1:8b:
+    vram_gb: 5.5
+    tasks: [general, chat, reasoning, code]
+    quality: good
+    description: "Well-rounded model with good reasoning"
+
+  llava:13b:
+    vram_gb: 8.0
+    tasks: [vision, image-description, multimodal]
+    quality: good
+    description: "Multimodal model for image understanding"
+
+  codellama:13b:
+    vram_gb: 9.0
+    tasks: [code, review, debugging]
+    quality: better
+    description: "Specialized code model"
+
+  llama3.1:70b-q4:
+    vram_gb: 40.0
+    tasks: [general, reasoning, code, analysis]
+    quality: best
+    description: "Large model, requires high-end GPU or CPU offload"
+
+sd:
+  sd15_512:
+    label: "SD 1.5 @ 512x512"
+    vram_gb: 4.0
+    resolution: [512, 512]
+
+  sd15_768:
+    label: "SD 1.5 @ 768x768"
+    vram_gb: 6.0
+    resolution: [768, 768]
+
+  sdxl_1024:
+    label: "SDXL @ 1024x1024"
+    vram_gb: 11.0
+    resolution: [1024, 1024]
+
+# Ollama environment variables for optimization
+ollama_env:
+  OLLAMA_FLASH_ATTENTION: "1"
+  OLLAMA_KV_CACHE_TYPE: "q8_0"
+  OLLAMA_MAX_LOADED_MODELS: "3"

@@ -5,14 +5,13 @@ Runs Blender in headless mode to generate 3D models, render scenes,
 create textures, and export to various formats.
 """
 
-import math
 import os
 import platform
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from ..engine.config import get_config
 
@@ -55,7 +54,7 @@ class BlenderClient:
         path = str(blender_path) if blender_path else _find_blender()
         if not path or not Path(path).exists():
             raise RuntimeError(
-                f"Blender not found. Set services.blender.path in localforge.yaml"
+                "Blender not found. Set services.blender.path in localforge.yaml"
             )
         self.blender_path = Path(path)
 
@@ -268,16 +267,6 @@ bpy.ops.render.render(write_still=True)
         valid_types = ["d4", "d6", "d8", "d10", "d12", "d20"]
         if dice_type not in valid_types:
             raise ValueError(f"Invalid dice type: {dice_type}. Valid: {valid_types}")
-
-        # Map dice to platonic solid operations
-        dice_ops = {
-            "d4": "bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=SIZE, depth=SIZE*1.4)",
-            "d6": f"bpy.ops.mesh.primitive_cube_add(size={size})",
-            "d8": "bpy.ops.mesh.primitive_solid_add(source='4')",
-            "d10": "bpy.ops.mesh.primitive_solid_add(source='4')",
-            "d12": "bpy.ops.mesh.primitive_solid_add(source='5')",
-            "d20": "bpy.ops.mesh.primitive_solid_add(source='8')",
-        }
 
         # Simplified dice creation (cube-based for d6, others as primitives)
         script = f'''

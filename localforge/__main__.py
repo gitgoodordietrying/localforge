@@ -6,6 +6,7 @@ Usage:
     python -m localforge run <recipe> [--input key=value] [--auto-approve]
     python -m localforge list [<directory>]
     python -m localforge health
+    python -m localforge system
     python -m localforge init
     python -m localforge history [--limit N]
 """
@@ -71,7 +72,7 @@ def cmd_run(args):
     result = runner.run(recipe_path, inputs)
 
     if result["success"]:
-        print(f"\nWorkflow completed successfully!")
+        print("\nWorkflow completed successfully!")
         print(f"Run directory: {result['run_dir']}")
     else:
         print(f"\nWorkflow failed: {result.get('error', 'Unknown error')}")
@@ -135,16 +136,28 @@ def cmd_health(args):
     if blender:
         print(f"  Blender: FOUND ({blender})")
     else:
-        print(f"  Blender: NOT FOUND")
+        print("  Blender: NOT FOUND")
 
     # Check FFmpeg
     ffmpeg = shutil.which("ffmpeg")
     if ffmpeg:
         print(f"  FFmpeg: FOUND ({ffmpeg})")
     else:
-        print(f"  FFmpeg: NOT FOUND")
+        print("  FFmpeg: NOT FOUND")
 
     print()
+
+
+def cmd_system(args):
+    """Show system hardware, services, and model recommendations."""
+    from .engine.system_info import SystemInfo
+    info = SystemInfo()
+
+    if args.json:
+        import json
+        print(json.dumps(info.summary(), indent=2, default=str))
+    else:
+        print(info.format_report())
 
 
 def cmd_init(args):
@@ -200,6 +213,11 @@ def main():
     # health
     subparsers.add_parser("health", help="Check service health")
 
+    # system
+    system_parser = subparsers.add_parser("system", help="Show system profile")
+    system_parser.add_argument("--json", action="store_true",
+                               help="Output as JSON")
+
     # init
     subparsers.add_parser("init", help="Interactive setup")
 
@@ -215,6 +233,8 @@ def main():
         cmd_list(args)
     elif args.command == "health":
         cmd_health(args)
+    elif args.command == "system":
+        cmd_system(args)
     elif args.command == "init":
         cmd_init(args)
     elif args.command == "history":

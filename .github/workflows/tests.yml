@@ -7,6 +7,22 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Run linter
+        run: ruff check localforge/ tests/
+
   test:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -29,3 +45,24 @@ jobs:
 
       - name: Run tests
         run: python -m pytest tests/ -v
+
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -e .
+
+      - name: Smoke test — hello-localforge recipe
+        run: python -m localforge run recipes/getting-started/hello-localforge.yaml --auto-approve
+
+      - name: Smoke test — system command
+        run: python -m localforge system

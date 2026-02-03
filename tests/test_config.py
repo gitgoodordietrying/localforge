@@ -1,6 +1,5 @@
 """Tests for engine/config.py"""
 
-import os
 import tempfile
 from pathlib import Path
 

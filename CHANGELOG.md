@@ -4,6 +4,24 @@ All notable changes to LocalForge will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.2.0] - 2026-02-03
+
+### Added
+- System discovery: `python -m localforge system` shows hardware, services, tools, and model recommendations
+- `SystemInfo` class (`localforge/engine/system_info.py`) — detects CPU, RAM, GPU/VRAM, running services, installed CLI tools
+- Model VRAM profiles (`localforge/data/model_profiles.yaml`) — Ollama and SD budgets from real-world profiling
+- 3 new domain-diverse example recipes: `batch-resize`, `code-review`, `data-extract`
+- `ruff` linting job in CI
+- Smoke test job in CI (runs hello-localforge.yaml end-to-end)
+- `docs/ROADMAP.md` — 6-phase evolution plan for LocalForge
+
+### Changed
+- Reorganized game-dev recipes into `recipes/domains/game-dev/`
+- README reframed: domain-diverse examples shown first (code review, data extraction, batch resize)
+- pyproject.toml description and keywords updated for general-purpose positioning
+- Agent configs (Claude, Codex, Cursor, generic) updated with general-purpose framing and new recipe paths
+- All existing lint issues fixed (ruff-clean codebase)
+
 ## [0.1.0] - 2026-02-03
 
 ### Added

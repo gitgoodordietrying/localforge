@@ -148,7 +148,7 @@ class ToolRegistry:
                 handler = getattr(module, "handle", None)
                 if handler:
                     self.tools[tool_name] = handler
-            except Exception as e:
+            except Exception:
                 # Tool failed to load — skip silently, report in pre-flight
                 pass
 

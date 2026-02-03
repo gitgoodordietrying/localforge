@@ -1,0 +1,95 @@
+# Data Extraction Pipeline
+# Ollama-only recipe — extracts structured data from unstructured text.
+# Demonstrates: LLM chaining for data work, no paid API needed.
+
+name: "data-extract"
+version: "1.0"
+description: "Extract structured data from unstructured text using local LLM"
+
+inputs:
+  - name: "topic"
+    type: "string"
+    required: true
+    description: "What kind of data to extract (e.g., 'contact info', 'product specs', 'key dates')"
+
+  - name: "text"
+    type: "string"
+    required: true
+    description: "The unstructured text to extract data from"
+
+  - name: "format"
+    type: "string"
+    default: "json"
+    choices: ["json", "csv", "yaml"]
+    description: "Output format"
+
+  - name: "model"
+    type: "string"
+    default: "llama3.2:3b"
+    description: "Ollama model to use"
+
+steps:
+  - id: "identify_fields"
+    name: "Identify extractable fields"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      model: "{{inputs.model}}"
+      system: "You identify data fields in text. Output only field names, one per line."
+      prompt: |
+        What {{inputs.topic}} fields can be extracted from this text?
+        List only the field names, one per line. No explanation.
+
+        Text:
+        {{inputs.text}}
+
+  - id: "extract"
+    name: "Extract structured data"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      model: "{{inputs.model}}"
+      system: "You extract structured data from text. Output ONLY the data in the requested format. No explanation."
+      prompt: |
+        Extract {{inputs.topic}} from the following text.
+        Output as {{inputs.format}}.
+        Fields to extract: {{steps.identify_fields.outputs.response}}
+
+        Text:
+        {{inputs.text}}
+
+  - id: "validate"
+    name: "Validate extraction"
+    tool: "ollama"
+    action: "generate"
+    inputs:
+      model: "{{inputs.model}}"
+      system: "You validate data extractions. Be brief."
+      prompt: |
+        Verify this extraction is correct and complete.
+        Reply with PASS or FAIL and a one-line reason.
+
+        Extracted data:
+        {{steps.extract.outputs.response}}
+
+        Original text:
+        {{inputs.text}}
+
+  - id: "save_output"
+    name: "Create output directory"
+    tool: "file_ops"
+    action: "mkdir"
+    inputs:
+      path: "{{temp_dir}}/extracted"
+
+cleanup:
+  on_success:
+    - action: "preserve"
+      path: "{{temp_dir}}"
+      reason: "output"
+
+# Usage:
+# python -m localforge run recipes/examples/data-extract.yaml \
+#   --input "topic=contact information" \
+#   --input "text=Call John Smith at 555-0123 or email john@example.com" \
+#   --auto-approve

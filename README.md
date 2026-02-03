@@ -56,11 +56,14 @@ LocalForge is domain-agnostic. The engine runs any multi-step pipeline; the reci
 
 | Use Case | Services Used | Example Recipe |
 |----------|---------------|----------------|
-| Game sprites with background removal | Ollama + SD | `recipes/examples/game-sprite.yaml` |
-| Seamless texture tiles | Ollama + SD | `recipes/examples/tileset.yaml` |
-| Background music for games | Ollama + MusicGen + FFmpeg | `recipes/examples/music-track.yaml` |
-| 3D model generation | Blender | `recipes/examples/3d-model.yaml` |
-| Text processing pipeline | Ollama | `recipes/getting-started/hello-ollama.yaml` |
+| Batch image resize | None (Pillow) | `recipes/examples/batch-resize.yaml` |
+| Code review | Ollama | `recipes/examples/code-review.yaml` |
+| Data extraction from text | Ollama | `recipes/examples/data-extract.yaml` |
+| Text processing pipeline | Ollama | `recipes/examples/text-pipeline.yaml` |
+| Game sprites with background removal | Ollama + SD | `recipes/domains/game-dev/game-sprite.yaml` |
+| Seamless texture tiles | Ollama + SD | `recipes/domains/game-dev/tileset.yaml` |
+| Background music | Ollama + MusicGen + FFmpeg | `recipes/domains/game-dev/music-track.yaml` |
+| 3D model generation | Blender | `recipes/domains/game-dev/3d-model.yaml` |
 | Engine test (zero dependencies) | None | `recipes/getting-started/hello-localforge.yaml` |
 
 ## Writing Recipes
@@ -143,7 +146,9 @@ localforge/                        # Repo root
 │   └── scripts/                   # Setup wizard, health checks
 ├── recipes/
 │   ├── getting-started/           # Minimal examples (start here)
-│   ├── examples/                  # Domain-specific examples
+│   ├── examples/                  # Domain-diverse examples
+│   ├── domains/                   # Domain-specific recipes
+│   │   └── game-dev/             # Game development recipes
 │   └── TEMPLATE.yaml              # Recipe authoring reference
 ├── agent-configs/                 # Ready-made agent integration configs
 ├── tests/                         # Test suite

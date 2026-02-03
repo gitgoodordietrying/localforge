@@ -55,7 +55,6 @@ def _detect_services() -> dict:
     blender = shutil.which("blender")
     if not blender:
         system = platform.system()
-        candidates = []
         if system == "Windows":
             pf = Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
             bf = pf / "Blender Foundation"

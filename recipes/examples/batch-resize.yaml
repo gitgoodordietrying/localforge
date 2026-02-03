@@ -1,0 +1,71 @@
+# Batch Image Resize
+# Zero-service recipe — uses only Pillow (image_processor tool).
+# Demonstrates: batch processing, file operations, no external services needed.
+
+name: "batch-resize"
+version: "1.0"
+description: "Resize images in a directory to a target size using Pillow"
+
+inputs:
+  - name: "input_dir"
+    type: "path"
+    required: true
+    description: "Directory containing images to resize"
+
+  - name: "output_dir"
+    type: "path"
+    required: true
+    description: "Directory to save resized images"
+
+  - name: "width"
+    type: "number"
+    default: 256
+    description: "Target width in pixels"
+
+  - name: "height"
+    type: "number"
+    default: 256
+    description: "Target height in pixels"
+
+steps:
+  - id: "create_output"
+    name: "Create output directory"
+    tool: "file_ops"
+    action: "mkdir"
+    inputs:
+      path: "{{inputs.output_dir}}"
+
+  - id: "list_images"
+    name: "List input images"
+    tool: "file_ops"
+    action: "list"
+    inputs:
+      path: "{{inputs.input_dir}}"
+
+  - id: "resize_batch"
+    name: "Resize all images"
+    tool: "batch"
+    action: "foreach"
+    inputs:
+      collection: "{{steps.list_images.outputs.files}}"
+      step:
+        tool: "image_processor"
+        action: "resize"
+        inputs:
+          input: "{{item}}"
+          output: "{{inputs.output_dir}}/{{item|basename}}"
+          width: "{{inputs.width}}"
+          height: "{{inputs.height}}"
+
+cleanup:
+  on_success:
+    - action: "preserve"
+      path: "{{inputs.output_dir}}"
+      reason: "output"
+
+# Usage:
+# python -m localforge run recipes/examples/batch-resize.yaml \
+#   --input "input_dir=./photos" \
+#   --input "output_dir=./thumbnails" \
+#   --input "width=128" --input "height=128" \
+#   --auto-approve

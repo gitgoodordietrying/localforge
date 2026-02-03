@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "localforge"
-version = "0.1.0"
-description = "Local-first workflow orchestrator — chain local LLMs, image generators, and media tools via YAML recipes"
+version = "0.2.0"
+description = "Local-first AI orchestrator — chain local LLMs, image generators, media tools, and any CLI via YAML recipes"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
 authors = [
     {name = "LocalForge Contributors"},
 ]
-keywords = ["workflow", "orchestrator", "ollama", "local-llm", "automation", "yaml", "pipeline"]
+keywords = ["workflow", "orchestrator", "ollama", "local-llm", "automation", "yaml", "pipeline", "ai", "local-first", "cli-agent"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

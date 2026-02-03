@@ -5,8 +5,6 @@ Generates images via the AUTOMATIC1111 SD WebUI API.
 """
 
 import base64
-import sys
-from pathlib import Path
 
 from ..engine.config import get_config
 

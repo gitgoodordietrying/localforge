@@ -55,7 +55,7 @@ class TestToolExecution:
         test_dir = str(ctx.temp_dir / "test_mkdir")
 
         try:
-            result = registry.execute("file_ops", "mkdir", {"path": test_dir}, ctx)
+            registry.execute("file_ops", "mkdir", {"path": test_dir}, ctx)
             assert Path(test_dir).exists()
         finally:
             shutil.rmtree(ctx.run_dir.parent, ignore_errors=True)
