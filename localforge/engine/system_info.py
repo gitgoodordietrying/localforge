@@ -1,5 +1,7 @@
 """System discovery and hardware profiling for LocalForge."""
 
+from __future__ import annotations
+
 import os
 import platform
 import shutil
