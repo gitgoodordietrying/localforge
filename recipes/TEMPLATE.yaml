@@ -45,7 +45,7 @@ steps:
     tool: "sd_client"
     action: "txt2img"      # or img2img
     inputs:
-      prompt: "{{steps.ollama_step.outputs.sd_prompt}}"
+      prompt: "{{steps.ollama_step.outputs.response}}"
       negative_prompt: "blurry, low quality"
       width: 512
       height: 512
@@ -96,7 +96,6 @@ cleanup:
 # {{inputs.name}}                    - User input value
 # {{steps.step_id.outputs.name}}     - Step output
 # {{config.key}}                     - Recipe config value
-# {{templates.key}}                  - Template value
 # {{temp_dir}}                       - Temp directory for this run
 # {{workflow.run_id}}                - Unique run ID
 # {{workflow.name}}                  - Workflow name

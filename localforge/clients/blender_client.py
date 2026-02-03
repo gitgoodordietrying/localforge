@@ -6,6 +6,7 @@ create textures, and export to various formats.
 """
 
 import math
+import os
 import platform
 import shutil
 import subprocess
@@ -13,7 +14,7 @@ import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from engine.config import get_config
+from ..engine.config import get_config
 
 
 def _find_blender() -> Optional[str]:
@@ -30,7 +31,7 @@ def _find_blender() -> Optional[str]:
     system = platform.system()
     candidates = []
     if system == "Windows":
-        pf = Path(r"C:\Program Files\Blender Foundation")
+        pf = Path(os.environ.get("ProgramFiles", "C:\\Program Files")) / "Blender Foundation"
         if pf.exists():
             for d in sorted(pf.iterdir(), reverse=True):
                 exe = d / "blender.exe"

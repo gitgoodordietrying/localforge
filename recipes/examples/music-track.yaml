@@ -71,16 +71,8 @@ steps:
       input: "{{steps.generate.outputs.output}}"
       output: "{{temp_dir}}/normalized.wav"
 
-  - id: "convert_ogg"
-    name: "Convert to OGG"
-    tool: "ffmpeg"
-    action: "convert"
-    inputs:
-      input: "{{steps.normalize.outputs.output}}"
-      output: "{{temp_dir}}/track.ogg"
-
   - id: "finalize"
-    name: "Save files"
+    name: "Save normalized track"
     tool: "file_ops"
     action: "copy"
     inputs:

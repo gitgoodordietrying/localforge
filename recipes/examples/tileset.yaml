@@ -118,12 +118,13 @@ steps:
       destination: "{{inputs.output_path}}"
 
   - id: "finalize_preview"
-    name: "Save preview"
+    name: "Save preview (skipped if no preview_path)"
     tool: "file_ops"
     action: "copy"
     inputs:
       source: "{{steps.preview.outputs.output}}"
       destination: "{{inputs.preview_path}}"
+    on_failure: "skip"
 
 cleanup:
   on_success:

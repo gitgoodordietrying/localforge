@@ -7,7 +7,7 @@ texture generation, and dice creation.
 
 from pathlib import Path
 
-from engine.config import get_config
+from ..engine.config import get_config
 
 TOOL_NAME = "blender"
 TOOL_ACTIONS = [
@@ -18,7 +18,7 @@ TOOL_ACTIONS = [
 
 def handle(action: str, inputs: dict, ctx) -> dict:
     """Handle Blender 3D operations."""
-    from clients.blender_client import BlenderClient
+    from ..clients.blender_client import BlenderClient
 
     config = get_config()
     blender_path = inputs.get("blender_path", config.blender_path)

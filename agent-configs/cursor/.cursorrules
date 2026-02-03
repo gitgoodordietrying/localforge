@@ -1,16 +1,36 @@
 # Cursor Rules — LocalForge Integration
 
 ## Local Workflow Runner
-This project uses LocalForge for multi-step pipelines.
+This project uses LocalForge for multi-step pipelines that chain local AI services.
 Run `python -m localforge run <recipe> --auto-approve` for automated workflows.
 
 ## Available Commands
 - `python -m localforge list` — List available recipes
 - `python -m localforge health` — Check service status
 - `python -m localforge run <recipe> --list-inputs` — See recipe inputs
+- `python -m localforge run <recipe> --input key=value --auto-approve` — Execute
+
+## When to Use LocalForge
+- Image generation (sprites, tilesets, textures) → SD recipes
+- Audio/music generation → audio recipes
+- 3D models and rendering → Blender recipes
+- Bulk text processing → Ollama recipes
+- Multi-step pipelines → write a custom recipe
 
 ## Key Recipes
-- `recipes/examples/game-sprite.yaml` — Generate sprites
-- `recipes/examples/tileset.yaml` — Generate tileable textures
-- `recipes/examples/music-track.yaml` — Generate music
-- `recipes/examples/3d-model.yaml` — Generate 3D models
+| Recipe | Services |
+|--------|----------|
+| `recipes/getting-started/hello-localforge.yaml` | None (engine test) |
+| `recipes/getting-started/hello-ollama.yaml` | Ollama |
+| `recipes/getting-started/hello-sd.yaml` | SD WebUI |
+| `recipes/examples/game-sprite.yaml` | Ollama + SD |
+| `recipes/examples/tileset.yaml` | Ollama + SD |
+| `recipes/examples/music-track.yaml` | Ollama + MusicGen |
+| `recipes/examples/3d-model.yaml` | Blender |
+
+## Creating Recipes
+Copy `recipes/TEMPLATE.yaml`. The engine auto-discovers tools from `tools/`.
+See `docs/RECIPE-AUTHORING.md` for the full format reference.
+
+## Token Savings
+Delegate grunt work (prompt engineering, classification, summarization) to local Ollama models via recipes. Reserve the paid agent for reasoning and orchestration.

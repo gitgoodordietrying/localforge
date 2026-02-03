@@ -7,7 +7,7 @@ Generates music with lyrics using the ACE-Step model via a local venv.
 import subprocess
 from pathlib import Path
 
-from engine.config import get_config
+from ..engine.config import get_config
 
 TOOL_NAME = "acestep"
 TOOL_ACTIONS = ["generate"]

@@ -8,7 +8,7 @@ import base64
 import sys
 from pathlib import Path
 
-from engine.config import get_config
+from ..engine.config import get_config
 
 TOOL_NAME = "sd_client"
 TOOL_ACTIONS = ["txt2img", "img2img", "get_models"]
@@ -17,7 +17,7 @@ TOOL_ACTIONS = ["txt2img", "img2img", "get_models"]
 def _get_client(ctx):
     """Get SD client, falling back to direct API if client not importable."""
     try:
-        from clients.sd_client import SDClient
+        from ..clients.sd_client import SDClient
 
         config = get_config()
         return SDClient(host=config.sd_host, timeout=config.sd_timeout)

@@ -7,7 +7,7 @@ Provides convert, normalize, loop, trim, and duration operations.
 import subprocess
 from pathlib import Path
 
-from engine.config import get_config
+from ..engine.config import get_config
 
 TOOL_NAME = "ffmpeg"
 TOOL_ACTIONS = ["convert", "normalize", "loop", "trim", "get_duration"]

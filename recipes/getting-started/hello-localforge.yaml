@@ -1,0 +1,42 @@
+# Hello LocalForge — Zero-dependency test recipe
+# Verifies the engine works without any external services.
+# Uses only file_ops (no Ollama, no SD, no Blender).
+
+name: "hello-localforge"
+version: "1.0"
+description: "Test the workflow engine with zero external dependencies"
+
+inputs:
+  - name: "message"
+    type: "string"
+    default: "LocalForge is working!"
+    description: "A message to echo through the pipeline"
+
+steps:
+  - id: "create_workspace"
+    name: "Create output directory"
+    tool: "file_ops"
+    action: "mkdir"
+    inputs:
+      path: "{{temp_dir}}/output"
+
+  - id: "verify"
+    name: "Verify directory was created"
+    tool: "file_ops"
+    action: "list"
+    inputs:
+      path: "{{temp_dir}}"
+
+cleanup:
+  on_success:
+    - action: "preserve"
+      path: "{{temp_dir}}"
+      reason: "output"
+
+# Usage:
+# python -m localforge run recipes/getting-started/hello-localforge.yaml --auto-approve
+#
+# This recipe needs NO external services. If it succeeds, the engine is working.
+# Next steps:
+#   - Install Ollama and try: recipes/getting-started/hello-ollama.yaml
+#   - Install SD WebUI and try: recipes/getting-started/hello-sd.yaml

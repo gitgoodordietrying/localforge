@@ -57,7 +57,7 @@ steps:
     tool: "sd_client"
     action: "txt2img"
     inputs:
-      prompt: "{{steps.build_prompt.outputs.sd_prompt}}, black background, game sprite, centered"
+      prompt: "{{steps.build_prompt.outputs.response}}, black background, game sprite, centered"
       negative_prompt: "blurry, low quality, text, watermark, frame, border, multiple objects, realistic"
       width: "{{inputs.width}}"
       height: "{{inputs.height}}"

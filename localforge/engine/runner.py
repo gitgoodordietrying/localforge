@@ -24,7 +24,7 @@ except ImportError:
     print("ERROR: PyYAML not installed. Run: pip install pyyaml")
     sys.exit(1)
 
-from engine.config import get_config
+from .config import get_config
 
 
 class WorkflowContext:
@@ -143,7 +143,7 @@ class ToolRegistry:
         for tool_file in tools_dir.glob("*_tool.py"):
             module_name = tool_file.stem
             try:
-                module = importlib.import_module(f"tools.{module_name}")
+                module = importlib.import_module(f"localforge.tools.{module_name}")
                 tool_name = getattr(module, "TOOL_NAME", module_name.replace("_tool", ""))
                 handler = getattr(module, "handle", None)
                 if handler:
@@ -201,7 +201,7 @@ class WorkflowRunner:
         db_run_id = None
         if use_persistence and self.config.persistence_enabled:
             try:
-                from engine.persistence import get_persistence
+                from .persistence import get_persistence
                 db = get_persistence(self.config.persistence_db_path)
                 db_run_id = db.start_run(
                     str(recipe_path), inputs, project_id, str(ctx.run_dir)

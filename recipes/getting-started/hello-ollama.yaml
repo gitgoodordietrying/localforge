@@ -1,5 +1,6 @@
 # Hello Ollama — Minimal getting-started recipe
 # Tests that Ollama is working and demonstrates basic variable resolution.
+# The LLM response is printed in the workflow log output.
 
 name: "hello-ollama"
 version: "1.0"
@@ -25,8 +26,8 @@ steps:
       model: "{{inputs.model}}"
       prompt: "{{inputs.prompt}}"
 
-  - id: "save"
-    name: "Save response"
+  - id: "setup_output"
+    name: "Create output directory"
     tool: "file_ops"
     action: "mkdir"
     inputs:
@@ -41,3 +42,6 @@ cleanup:
 # Usage:
 # python -m localforge run recipes/getting-started/hello-ollama.yaml \
 #   --input prompt="Tell me a joke" --auto-approve
+#
+# The LLM response is available at: steps.generate.outputs.response
+# It's printed in the workflow log and preserved in the run directory.

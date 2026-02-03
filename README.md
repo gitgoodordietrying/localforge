@@ -1,5 +1,9 @@
 # LocalForge
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
+[![Tests](https://github.com/gitgoodordietrying/localforge/actions/workflows/tests.yml/badge.svg)](https://github.com/gitgoodordietrying/localforge/actions/workflows/tests.yml)
+
 A local-first workflow orchestrator that uses cheap local LLMs as workers to save tokens on the paid agent you're running.
 
 You have a CLI agent (Claude Code, Codex, Gemini CLI, etc.) that costs real money per token. LocalForge puts local models like Ollama to work as grunt labor — generating prompts, processing text, classifying data — while your paid agent stays in the driver's seat. You define multi-step pipelines as YAML recipes that chain local LLMs, image generators, media tools, and custom scripts. One command runs the whole pipeline.
@@ -31,17 +35,20 @@ You have a CLI agent (Claude Code, Codex, Gemini CLI, etc.) that costs real mone
 # Clone and install
 git clone https://github.com/gitgoodordietrying/localforge.git
 cd localforge
-pip install -r requirements.txt
+pip install -e .
 
 # Interactive setup — detects your local services
 python -m localforge init
 
-# Run a recipe
+# Verify the engine works (no services needed)
+python -m localforge run recipes/getting-started/hello-localforge.yaml --auto-approve
+
+# Run a recipe with Ollama
 python -m localforge run recipes/getting-started/hello-ollama.yaml \
   --input prompt="Tell me a joke" --auto-approve
 ```
 
-**Prerequisites:** Python 3.9+ and at least one local service (Ollama recommended).
+**Prerequisites:** Python 3.9+ and at least one local service ([Ollama](https://ollama.com) recommended).
 
 ## What Can It Do?
 
@@ -54,6 +61,7 @@ LocalForge is domain-agnostic. The engine runs any multi-step pipeline; the reci
 | Background music for games | Ollama + MusicGen + FFmpeg | `recipes/examples/music-track.yaml` |
 | 3D model generation | Blender | `recipes/examples/3d-model.yaml` |
 | Text processing pipeline | Ollama | `recipes/getting-started/hello-ollama.yaml` |
+| Engine test (zero dependencies) | None | `recipes/getting-started/hello-localforge.yaml` |
 
 ## Writing Recipes
 
@@ -105,7 +113,7 @@ Each step supports `on_failure` strategies:
 
 - `abort` — Stop the workflow (default)
 - `skip` — Log warning, continue to next step
-- `retry` — Retry N times
+- `retry` — Retry N times (set `retry_count`)
 - `refine` — Enter refinement loop with validation feedback
 
 ## Built-in Tools
@@ -129,35 +137,18 @@ Each step supports `on_failure` strategies:
 ```
 localforge/                        # Repo root
 ├── localforge/                    # Python package
-│   ├── engine/
-│   │   ├── runner.py              # Workflow engine
-│   │   ├── config.py              # Configuration loader
-│   │   └── persistence.py         # SQLite job tracking
-│   ├── tools/
-│   │   ├── ollama_tool.py         # Local LLM integration
-│   │   ├── sd_tool.py             # Stable Diffusion
-│   │   ├── image_tool.py          # Image processing
-│   │   ├── validator_tool.py      # Quality gates
-│   │   ├── file_tool.py           # File operations
-│   │   ├── batch_tool.py          # Iteration
-│   │   ├── blender_tool.py        # 3D rendering
-│   │   ├── ffmpeg_tool.py         # Media processing
-│   │   ├── musicgen_tool.py       # Music generation
-│   │   ├── acestep_tool.py        # ACE-Step music
-│   │   └── script_tool.py         # Custom scripts
-│   ├── clients/
-│   │   ├── sd_client.py           # SD WebUI API client
-│   │   └── blender_client.py      # Blender subprocess client
-│   └── scripts/
-│       ├── setup.py               # localforge init
-│       └── health_check.py        # Service detection
+│   ├── engine/                    # Workflow engine, config, persistence
+│   ├── tools/                     # Auto-discovered tool plugins (11 built-in)
+│   ├── clients/                   # Service API clients (SD, Blender)
+│   └── scripts/                   # Setup wizard, health checks
 ├── recipes/
-│   ├── getting-started/           # Minimal examples
-│   ├── examples/                  # Domain-diverse examples
+│   ├── getting-started/           # Minimal examples (start here)
+│   ├── examples/                  # Domain-specific examples
 │   └── TEMPLATE.yaml              # Recipe authoring reference
+├── agent-configs/                 # Ready-made agent integration configs
+├── tests/                         # Test suite
 ├── docs/                          # Documentation
-├── localforge.yaml.example
-├── requirements.txt
+├── pyproject.toml                 # Package config (pip install -e .)
 └── README.md
 ```
 
@@ -178,7 +169,7 @@ services:
     host: http://localhost:7860
     timeout: 120
   blender:
-    path: /usr/bin/blender  # or C:\Program Files\Blender Foundation\Blender 4.x\blender.exe
+    path: null  # auto-detected on all platforms
   ffmpeg:
     path: ffmpeg  # uses PATH by default
 
@@ -189,16 +180,16 @@ persistence:
 
 ## Agent Integration
 
-LocalForge works with any CLI agent. Example AGENT.md for your project:
+LocalForge works with any CLI agent. Copy the appropriate config into your project:
 
-```markdown
-## LocalForge Workflows
-Run `python -m localforge run <recipe> --auto-approve` to execute pipelines.
-Use `python -m localforge list` to see available recipes.
-Use `python -m localforge health` to check which services are running.
-```
+| Agent | Config File | Copy To |
+|-------|-------------|---------|
+| Claude Code | `agent-configs/claude/CLAUDE.md` | Project root |
+| Codex | `agent-configs/codex/AGENTS.md` | Project root |
+| Cursor | `agent-configs/cursor/.cursorrules` | Project root |
+| Other | `agent-configs/generic/AGENT.md` | Project root |
 
-See `agent-configs/` for ready-made config examples for Claude Code, Cursor, Codex, and others.
+Each config tells the agent what LocalForge can do, when to use it, and includes ready-to-run commands.
 
 ## Adding Custom Tools
 
@@ -206,31 +197,53 @@ Drop a Python file in `localforge/tools/` that implements the tool interface:
 
 ```python
 # localforge/tools/my_tool.py
+TOOL_NAME = "my_tool"
+TOOL_ACTIONS = ["my_action"]
+
 def handle(action: str, inputs: dict, ctx) -> dict:
     if action == "my_action":
         # Do work...
         return {"result": "done"}
     raise ValueError(f"Unknown action: {action}")
-
-TOOL_NAME = "my_tool"
-TOOL_ACTIONS = ["my_action"]
 ```
 
 The engine auto-discovers tools in the `localforge/tools/` directory.
+
+## Troubleshooting
+
+**"Cannot connect to Ollama"** — Start Ollama with `ollama serve`, then verify with `python -m localforge health`.
+
+**"SD WebUI is not running"** — Start Stable Diffusion WebUI with `--api` flag. Default port is 7860.
+
+**"Blender not found"** — Set the path in `localforge.yaml` under `services.blender.path`, or add Blender to your system PATH.
+
+**"Recipe not found"** — Use the full relative path: `python -m localforge run recipes/examples/game-sprite.yaml`. Run `python -m localforge list` to see all available recipes.
+
+**"Missing required inputs"** — Check what the recipe needs: `python -m localforge run <recipe> --list-inputs`.
+
+**Tests failing?** — Run `pip install -e ".[full]"` to install all optional dependencies, then `python -m pytest tests/ -v`.
+
+## Security
+
+LocalForge executes user-provided recipes that can run arbitrary code via the `script` tool and subprocess calls via `blender` and `ffmpeg`. **Only run recipes from sources you trust.** There is no sandboxing — recipes execute with the same permissions as the Python process. See [SECURITY.md](SECURITY.md) for details.
 
 ## Requirements
 
 **Minimum:** Python 3.9+, PyYAML, requests
 
-**Full:** Pillow, numpy, rembg (for AI background removal)
+**Full:** `pip install -e ".[full]"` (adds Pillow, numpy, rembg for image processing)
 
 **Services (install what you need):**
-- [Ollama](https://ollama.ai) — Local LLMs (recommended)
+- [Ollama](https://ollama.com) — Local LLMs (recommended starting point)
 - [Stable Diffusion WebUI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) — Image generation
 - [Blender](https://www.blender.org) — 3D modeling and rendering
 - [FFmpeg](https://ffmpeg.org) — Audio/video processing
 - [MusicGen](https://github.com/facebookresearch/audiocraft) — Music generation
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, PR process, and how to add new tools.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

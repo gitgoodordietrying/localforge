@@ -2,6 +2,10 @@
 Script execution tool.
 
 Runs arbitrary user scripts (Python, shell, etc.) as workflow steps.
+
+SECURITY WARNING: This tool executes scripts with the same permissions as the
+LocalForge process. Only run recipes from trusted sources. A malicious recipe
+could use this tool to execute arbitrary commands on your system.
 """
 
 import subprocess
@@ -17,6 +21,9 @@ def handle(action: str, inputs: dict, ctx) -> dict:
     if action == "run":
         script_path = Path(inputs.get("script"))
         args = inputs.get("args", [])
+        if isinstance(args, str):
+            args = args.split()
+        args = [str(a) for a in args]
         timeout = int(inputs.get("timeout", 300))
         working_dir = inputs.get("working_dir", None)
 

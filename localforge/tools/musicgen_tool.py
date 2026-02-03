@@ -7,7 +7,7 @@ Generates music using Facebook's MusicGen model via a local venv.
 import subprocess
 from pathlib import Path
 
-from engine.config import get_config
+from ..engine.config import get_config
 
 TOOL_NAME = "musicgen"
 TOOL_ACTIONS = ["generate"]

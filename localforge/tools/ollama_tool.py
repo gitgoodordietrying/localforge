@@ -7,7 +7,7 @@ on the paid agent running the workflow.
 
 import requests
 
-from engine.config import get_config
+from ..engine.config import get_config
 
 TOOL_NAME = "ollama"
 TOOL_ACTIONS = ["generate"]
@@ -38,9 +38,17 @@ def handle(action: str, inputs: dict, ctx) -> dict:
             result = response.json()
             text = result.get("response", "")
             return {"response": text, "sd_prompt": text}
+        except requests.exceptions.ConnectionError:
+            raise RuntimeError(
+                f"Cannot connect to Ollama at {host}. "
+                f"Is it running? Start it with: ollama serve"
+            )
+        except requests.exceptions.Timeout:
+            raise RuntimeError(
+                f"Ollama request timed out (model: {model}). "
+                f"The model may be loading — try again, or increase timeout in localforge.yaml"
+            )
         except requests.exceptions.RequestException as e:
-            ctx.log(f"Ollama error: {e}", "ERROR")
-            # Return the input prompt as fallback
-            return {"response": prompt, "sd_prompt": prompt}
+            raise RuntimeError(f"Ollama request failed: {e}")
 
     raise ValueError(f"Unknown ollama action: {action}")

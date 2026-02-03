@@ -26,7 +26,7 @@ def handle(action: str, inputs: dict, ctx) -> dict:
         raise ValueError("batch.foreach requires workflow_steps")
 
     # Import here to avoid circular dependency
-    from engine.runner import ToolRegistry
+    from ..engine.runner import ToolRegistry
 
     tool_registry = ToolRegistry()
     results = []

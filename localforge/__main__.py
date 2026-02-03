@@ -23,10 +23,7 @@ except ImportError:
 
 def cmd_run(args):
     """Run a workflow recipe."""
-    # Add project root to path so imports work
-    sys.path.insert(0, str(Path(__file__).parent))
-
-    from engine.runner import WorkflowRunner
+    from .engine.runner import WorkflowRunner
 
     recipe_path = Path(args.recipe)
     if not recipe_path.exists():
@@ -113,8 +110,6 @@ def cmd_list(args):
 
 def cmd_health(args):
     """Check service health."""
-    sys.path.insert(0, str(Path(__file__).parent))
-
     import requests
 
     checks = {
@@ -154,17 +149,14 @@ def cmd_health(args):
 
 def cmd_init(args):
     """Interactive setup wizard."""
-    sys.path.insert(0, str(Path(__file__).parent))
-    from scripts.setup import run_setup
+    from .scripts.setup import run_setup
     run_setup()
 
 
 def cmd_history(args):
     """Show workflow run history."""
-    sys.path.insert(0, str(Path(__file__).parent))
-
     try:
-        from engine.persistence import get_persistence
+        from .engine.persistence import get_persistence
         db = get_persistence()
         runs = db.list_runs(limit=args.limit)
 
