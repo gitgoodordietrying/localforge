@@ -83,7 +83,7 @@ def cmd_run(args):
 
 def cmd_list(args):
     """List available recipes."""
-    recipes_dir = Path(args.directory) if args.directory else Path(__file__).parent / "recipes"
+    recipes_dir = Path(args.directory) if args.directory else Path(__file__).parent.parent / "recipes"
 
     if not recipes_dir.exists():
         print(f"Directory not found: {recipes_dir}")

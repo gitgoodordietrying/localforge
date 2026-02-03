@@ -127,34 +127,35 @@ Each step supports `on_failure` strategies:
 ## Project Structure
 
 ```
-localforge/
-├── engine/
-│   ├── runner.py          # Workflow engine
-│   ├── config.py          # Configuration loader
-│   └── persistence.py     # SQLite job tracking
-├── tools/
-│   ├── ollama_tool.py     # Local LLM integration
-│   ├── sd_tool.py         # Stable Diffusion
-│   ├── image_tool.py      # Image processing
-│   ├── validator_tool.py  # Quality gates
-│   ├── file_tool.py       # File operations
-│   ├── batch_tool.py      # Iteration
-│   ├── blender_tool.py    # 3D rendering
-│   ├── ffmpeg_tool.py     # Media processing
-│   ├── musicgen_tool.py   # Music generation
-│   ├── acestep_tool.py    # ACE-Step music
-│   └── script_tool.py     # Custom scripts
-├── clients/
-│   ├── sd_client.py       # SD WebUI API client
-│   └── blender_client.py  # Blender subprocess client
+localforge/                        # Repo root
+├── localforge/                    # Python package
+│   ├── engine/
+│   │   ├── runner.py              # Workflow engine
+│   │   ├── config.py              # Configuration loader
+│   │   └── persistence.py         # SQLite job tracking
+│   ├── tools/
+│   │   ├── ollama_tool.py         # Local LLM integration
+│   │   ├── sd_tool.py             # Stable Diffusion
+│   │   ├── image_tool.py          # Image processing
+│   │   ├── validator_tool.py      # Quality gates
+│   │   ├── file_tool.py           # File operations
+│   │   ├── batch_tool.py          # Iteration
+│   │   ├── blender_tool.py        # 3D rendering
+│   │   ├── ffmpeg_tool.py         # Media processing
+│   │   ├── musicgen_tool.py       # Music generation
+│   │   ├── acestep_tool.py        # ACE-Step music
+│   │   └── script_tool.py         # Custom scripts
+│   ├── clients/
+│   │   ├── sd_client.py           # SD WebUI API client
+│   │   └── blender_client.py      # Blender subprocess client
+│   └── scripts/
+│       ├── setup.py               # localforge init
+│       └── health_check.py        # Service detection
 ├── recipes/
-│   ├── getting-started/   # Minimal examples
-│   ├── examples/          # Domain-diverse examples
-│   └── TEMPLATE.yaml      # Recipe authoring reference
-├── scripts/
-│   ├── setup.py           # localforge init
-│   └── health_check.py    # Service detection
-├── docs/                  # Documentation
+│   ├── getting-started/           # Minimal examples
+│   ├── examples/                  # Domain-diverse examples
+│   └── TEMPLATE.yaml              # Recipe authoring reference
+├── docs/                          # Documentation
 ├── localforge.yaml.example
 ├── requirements.txt
 └── README.md
@@ -201,10 +202,10 @@ See `agent-configs/` for ready-made config examples for Claude Code, Cursor, Cod
 
 ## Adding Custom Tools
 
-Drop a Python file in `tools/` that implements the tool interface:
+Drop a Python file in `localforge/tools/` that implements the tool interface:
 
 ```python
-# tools/my_tool.py
+# localforge/tools/my_tool.py
 def handle(action: str, inputs: dict, ctx) -> dict:
     if action == "my_action":
         # Do work...
@@ -215,7 +216,7 @@ TOOL_NAME = "my_tool"
 TOOL_ACTIONS = ["my_action"]
 ```
 
-The engine auto-discovers tools in the `tools/` directory.
+The engine auto-discovers tools in the `localforge/tools/` directory.
 
 ## Requirements
 

@@ -2,14 +2,14 @@
 
 ## Adding a Custom Tool
 
-1. Create a file in `tools/` named `<name>_tool.py`
+1. Create a file in `localforge/tools/` named `<name>_tool.py`
 2. Export `TOOL_NAME` and `handle()`
 3. Use it in recipes with `tool: "<name>"`
 
 ## Minimal Example
 
 ```python
-# tools/weather_tool.py
+# localforge/tools/weather_tool.py
 """Weather data tool."""
 
 import requests
@@ -83,7 +83,7 @@ def handle(action, inputs, ctx):
 
 ## Auto-Discovery
 
-The `ToolRegistry` scans `tools/*_tool.py` at startup. If your module fails to import (missing dependency, etc.), it's silently skipped. Run `python -m localforge health` to verify tools loaded correctly.
+The `ToolRegistry` scans `localforge/tools/*_tool.py` at startup. If your module fails to import (missing dependency, etc.), it's silently skipped. Run `python -m localforge health` to verify tools loaded correctly.
 
 ## Accessing Services
 

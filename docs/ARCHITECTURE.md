@@ -66,9 +66,9 @@ Each step can specify `on_failure`:
 
 ## Tool Plugin System
 
-Tools are Python modules in `tools/` matching `*_tool.py`. The registry imports them at startup. To add a custom tool:
+Tools are Python modules in `localforge/tools/` matching `*_tool.py`. The registry imports them at startup. To add a custom tool:
 
-1. Create `tools/my_tool.py`
+1. Create `localforge/tools/my_tool.py`
 2. Export `TOOL_NAME = "my_tool"`
 3. Export `def handle(action, inputs, ctx) -> dict`
 4. Use `tool: "my_tool"` in recipes
