@@ -29,7 +29,7 @@ You have a CLI agent (Claude Code, Codex, Gemini CLI, etc.) that costs real mone
 
 ```bash
 # Clone and install
-git clone https://github.com/your-username/localforge.git
+git clone https://github.com/gitgoodordietrying/localforge.git
 cd localforge
 pip install -r requirements.txt
 
