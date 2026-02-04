@@ -8,7 +8,7 @@ import shutil
 from pathlib import Path
 
 TOOL_NAME = "file_ops"
-TOOL_ACTIONS = ["copy", "move", "delete", "mkdir", "copy_multiple", "list"]
+TOOL_ACTIONS = ["copy", "move", "delete", "mkdir", "copy_multiple", "list", "read"]
 
 
 def handle(action: str, inputs: dict, ctx) -> dict:
@@ -56,5 +56,14 @@ def handle(action: str, inputs: dict, ctx) -> dict:
         pattern = inputs.get("pattern", "*")
         files = list(path.glob(pattern))
         return {"files": [str(f) for f in files], "count": len(files)}
+
+    elif action == "read":
+        path = Path(inputs.get("path"))
+        encoding = inputs.get("encoding", "utf-8")
+        max_bytes = int(inputs.get("max_bytes", 100_000))
+        content = path.read_text(encoding=encoding)
+        if len(content) > max_bytes:
+            content = content[:max_bytes]
+        return {"content": content, "path": str(path), "size": path.stat().st_size}
 
     raise ValueError(f"Unknown file_ops action: {action}")

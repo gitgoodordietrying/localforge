@@ -33,6 +33,13 @@ inputs:
     description: "Where to save the review"
 
 steps:
+  - id: "read_file"
+    name: "Read source code"
+    tool: "file_ops"
+    action: "read"
+    inputs:
+      path: "{{inputs.file_path}}"
+
   - id: "analyze"
     name: "Analyze code structure"
     tool: "ollama"
@@ -41,9 +48,13 @@ steps:
       model: "{{inputs.model}}"
       system: "You are a code reviewer. Analyze code structure concisely."
       prompt: |
-        Analyze this {{inputs.language}} code file at {{inputs.file_path}}.
+        Analyze this {{inputs.language}} code file.
         List: number of functions, classes, imports, and overall structure.
         Be brief — bullet points only.
+
+        ```
+        {{steps.read_file.outputs.content}}
+        ```
 
   - id: "review"
     name: "Perform detailed review"
@@ -57,6 +68,11 @@ steps:
 
         Code structure:
         {{steps.analyze.outputs.response}}
+
+        Source code:
+        ```
+        {{steps.read_file.outputs.content}}
+        ```
 
         For each issue found, provide:
         1. Severity (critical/warning/info)

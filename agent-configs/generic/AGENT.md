@@ -30,6 +30,8 @@ python -m localforge run <recipe> --input key=value --auto-approve  # Execute
 | `recipes/examples/text-pipeline.yaml` | Ollama |
 | `recipes/domains/game-dev/game-sprite.yaml` | Ollama + SD |
 | `recipes/domains/game-dev/tileset.yaml` | Ollama + SD |
+| `recipes/domains/game-dev/music-track.yaml` | Ollama + MusicGen |
+| `recipes/domains/game-dev/3d-model.yaml` | Blender |
 
 ## Creating Recipes
 Copy `recipes/TEMPLATE.yaml` and modify. See `docs/RECIPE-AUTHORING.md` for the full format.

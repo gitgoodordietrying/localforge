@@ -13,12 +13,18 @@ from localforge.engine.runner import WorkflowContext
 @pytest.fixture
 def ctx():
     """Create a minimal WorkflowContext for testing."""
+    import shutil
+
     recipe = {
         "name": "test-recipe",
         "config": {"max_iterations": 5, "nested": {"key": "value"}},
     }
     inputs = {"name": "world", "count": "3"}
-    return WorkflowContext(recipe, inputs, run_base_dir="./test_runs")
+    context = WorkflowContext(recipe, inputs, run_base_dir="./test_runs")
+    yield context
+    # Clean up test directories
+    if context.run_dir.exists():
+        shutil.rmtree(context.run_dir.parent, ignore_errors=True)
 
 
 class TestVariableResolution:
@@ -98,10 +104,3 @@ class TestContextInit:
 
     def test_run_id_format(self, ctx):
         assert len(ctx.run_id) == 8
-
-    def test_cleanup(self, ctx):
-        """Clean up test directories."""
-        import shutil
-        run_dir = ctx.run_dir
-        if run_dir.exists():
-            shutil.rmtree(run_dir.parent, ignore_errors=True)

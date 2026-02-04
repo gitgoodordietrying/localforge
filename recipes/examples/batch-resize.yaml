@@ -1,6 +1,6 @@
 # Batch Image Resize
-# Zero-service recipe — uses only Pillow (image_processor tool).
-# Demonstrates: batch processing, file operations, no external services needed.
+# Pillow-only recipe — no external services needed.
+# Demonstrates: batch processing, file operations, image_processor tool.
 
 name: "batch-resize"
 version: "1.0"
@@ -41,21 +41,23 @@ steps:
     action: "list"
     inputs:
       path: "{{inputs.input_dir}}"
+      pattern: "*.png"
 
   - id: "resize_batch"
     name: "Resize all images"
     tool: "batch"
     action: "foreach"
     inputs:
-      collection: "{{steps.list_images.outputs.files}}"
-      step:
-        tool: "image_processor"
-        action: "resize"
-        inputs:
-          input: "{{item}}"
-          output: "{{inputs.output_dir}}/{{item|basename}}"
-          width: "{{inputs.width}}"
-          height: "{{inputs.height}}"
+      items: "{{steps.list_images.outputs.files}}"
+      workflow_steps:
+        - id: "resize"
+          tool: "image_processor"
+          action: "resize"
+          inputs:
+            input: "{{item}}"
+            output: "{{inputs.output_dir}}/resized_{{item_index}}.png"
+            width: "{{inputs.width}}"
+            height: "{{inputs.height}}"
 
 cleanup:
   on_success:

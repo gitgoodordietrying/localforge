@@ -38,12 +38,17 @@ venv/
 # Testing
 .pytest_cache/
 .coverage
+coverage.xml
 htmlcov/
 .tox/
 .nox/
+test_runs/
 
 # Ruff
 .ruff_cache/
+
+# Type checking
+.mypy_cache/
 
 # LocalForge runtime
 workflow_runs/

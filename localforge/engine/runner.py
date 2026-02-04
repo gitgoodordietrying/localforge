@@ -134,6 +134,7 @@ class ToolRegistry:
 
     def __init__(self):
         self.tools: Dict[str, Any] = {}
+        self.load_errors: Dict[str, str] = {}
         self._discover_tools()
 
     def _discover_tools(self):
@@ -148,9 +149,9 @@ class ToolRegistry:
                 handler = getattr(module, "handle", None)
                 if handler:
                     self.tools[tool_name] = handler
-            except Exception:
-                # Tool failed to load — skip silently, report in pre-flight
-                pass
+            except Exception as e:
+                tool_name = module_name.replace("_tool", "")
+                self.load_errors[tool_name] = str(e)
 
     def register(self, name: str, handler):
         """Manually register a tool handler."""
@@ -207,8 +208,8 @@ class WorkflowRunner:
                     str(recipe_path), inputs, project_id, str(ctx.run_dir)
                 )
                 ctx.run_id = db_run_id
-            except Exception:
-                ctx.log("Persistence not available, running without tracking", "WARNING")
+            except Exception as e:
+                ctx.log(f"Persistence not available ({e}), running without tracking", "WARNING")
 
         ctx.log(f"Starting workflow: {recipe.get('name', 'unnamed')}")
         ctx.log(f"Run ID: {ctx.run_id}")

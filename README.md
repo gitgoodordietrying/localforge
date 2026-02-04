@@ -68,7 +68,7 @@ LocalForge is domain-agnostic. The engine runs any multi-step pipeline; the reci
 
 ## Writing Recipes
 
-Recipes are YAML files that define inputs, steps, and outputs. Each step calls a tool with inputs and produces outputs that later steps can reference.
+Recipes are YAML files that define inputs, steps, and outputs. Each step calls a tool with inputs and produces outputs that later steps can reference. See [docs/RECIPE-AUTHORING.md](docs/RECIPE-AUTHORING.md) for the full format reference.
 
 ```yaml
 name: "hello-world"
@@ -127,7 +127,7 @@ Each step supports `on_failure` strategies:
 | `sd_client` | txt2img, img2img, get_models | SD WebUI |
 | `image_processor` | remove_bg, resize, batch_remove_bg, make_seamless, tile_preview, create_idle_animation, create_directional_sheet, assemble_sheet | Pillow |
 | `validator` | check_image, check_tileset, check_sprites | Pillow + numpy |
-| `file_ops` | copy, move, delete, mkdir, copy_multiple, list | None |
+| `file_ops` | copy, move, delete, mkdir, copy_multiple, list, read | None |
 | `batch` | foreach | None |
 | `blender` | render, render_animation, create_primitive, create_text_3d, generate_texture, render_isometric, create_dice, create_dice_set | Blender |
 | `ffmpeg` | convert, normalize, loop, trim, get_duration | FFmpeg |

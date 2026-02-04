@@ -7,7 +7,7 @@ How to install and configure the services that LocalForge can use.
 Local LLM runner. Used for prompt engineering, text processing, and classification.
 
 **Install:**
-- https://ollama.ai — Download for your platform
+- https://ollama.com — Download for your platform
 
 **Pull a model:**
 ```bash

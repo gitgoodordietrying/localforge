@@ -187,7 +187,7 @@ def run_setup():
         print('  python -m localforge run recipes/getting-started/hello-sd.yaml \\')
         print('    --input prompt="a sunset" --auto-approve')
     else:
-        print("  Install Ollama (https://ollama.ai) to get started.")
+        print("  Install Ollama (https://ollama.com) to get started.")
     print()
 
 

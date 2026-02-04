@@ -58,7 +58,10 @@ def _sd_direct_api(action: str, inputs: dict, ctx) -> dict:
             outputs["primary"] = outputs["image_0"]
         return outputs
 
-    raise ValueError(f"Unknown action: {action}")
+    raise ValueError(
+        f"SD direct API fallback only supports txt2img, not '{action}'. "
+        "Install the full package to enable all actions: pip install -e \".[full]\""
+    )
 
 
 def handle(action: str, inputs: dict, ctx) -> dict:

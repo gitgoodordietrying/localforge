@@ -36,27 +36,28 @@ LocalForge follows a **CEO / Manager / Worker** hierarchy:
 
 ---
 
-## Current State (v0.1.0)
+## Current State (v0.2.0)
 
 ### What exists
 
 | Component | Count | Details |
 |-----------|-------|---------|
 | Built-in tools | 11 | ollama, sd_client, image_processor, validator, file_ops, batch, blender, ffmpeg, musicgen, acestep, script |
-| Recipes | 9 | 3 getting-started, 5 examples, 1 template |
-| CLI commands | 5 | run, list, health, init, history |
-| Test suite | 79 | tests across config, context, tool discovery, recipe validation |
-| CI matrix | 9 jobs | 3 OS × 3 Python versions |
+| Recipes | 11 | 3 getting-started, 4 examples, 4 game-dev domain, 1 template |
+| CLI commands | 6 | run, list, health, system, init, history |
+| Test suite | 120+ | config, context, tool discovery, recipe validation, system info |
+| CI matrix | 9 jobs + lint + smoke | 3 OS × 3 Python versions, ruff lint, recipe smoke test |
 | Agent configs | 4 | Claude Code, Codex, Cursor, generic |
 
 ### Architecture
 
 ```
 localforge/
-├── engine/          # runner.py (orchestration), config.py, persistence.py
+├── engine/          # runner.py (orchestration), config.py, persistence.py, system_info.py
 ├── tools/           # 11 auto-discovered tool plugins
 ├── clients/         # Service API clients (SD, Blender)
-└── scripts/         # Setup wizard, health checks
+├── data/            # Model profiles (VRAM budgets)
+└── scripts/         # Setup wizard
 ```
 
 **Tool interface:** Every tool exports `TOOL_NAME`, `TOOL_ACTIONS`, and `handle(action, inputs, ctx) -> dict`. The engine auto-discovers tools from `localforge/tools/`. This interface is stable and will not change.
