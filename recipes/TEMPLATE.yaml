@@ -96,8 +96,10 @@ cleanup:
 # {{inputs.name}}                    - User input value
 # {{steps.step_id.outputs.name}}     - Step output
 # {{config.key}}                     - Recipe config value
+# {{templates.key}}                  - Recipe template value
 # {{temp_dir}}                       - Temp directory for this run
 # {{workflow.run_id}}                - Unique run ID
+# {{workflow.run_dir}}               - Run directory path
 # {{workflow.name}}                  - Workflow name
 # {{timestamp}}                      - Current ISO timestamp
 #
@@ -108,7 +110,7 @@ cleanup:
 #                    tile_preview, create_idle_animation,
 #                    create_directional_sheet, assemble_sheet
 # - validator: check_image, check_tileset, check_sprites
-# - file_ops: copy, move, delete, mkdir, copy_multiple, list
+# - file_ops: copy, move, delete, mkdir, copy_multiple, list, read, write
 # - batch: foreach
 # - musicgen: generate
 # - acestep: generate

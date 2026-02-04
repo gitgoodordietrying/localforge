@@ -197,13 +197,15 @@ bpy.ops.object.shade_smooth()
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
+        # Escape text for safe embedding in a Python string literal
+        safe_text = text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
         script = f'''
 import bpy
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete()
 bpy.ops.object.text_add()
 text_obj = bpy.context.object
-text_obj.data.body = "{text}"
+text_obj.data.body = "{safe_text}"
 text_obj.data.size = {font_size}
 text_obj.data.extrude = {extrude}
 bpy.ops.object.convert(target='MESH')

@@ -93,18 +93,23 @@ steps:
 
         Start with overall assessment (pass/needs-work/critical-issues).
 
-  - id: "save_output"
-    name: "Create output directory"
+  - id: "save_review"
+    name: "Save review to file"
     tool: "file_ops"
-    action: "mkdir"
+    action: "write"
     inputs:
-      path: "{{temp_dir}}/review"
+      path: "{{inputs.output_path}}"
+      content: |
+        # Code Review: {{inputs.file_path}}
 
-cleanup:
-  on_success:
-    - action: "preserve"
-      path: "{{temp_dir}}"
-      reason: "output"
+        ## Summary
+        {{steps.summarize.outputs.response}}
+
+        ## Detailed Review
+        {{steps.review.outputs.response}}
+
+        ## Code Structure
+        {{steps.analyze.outputs.response}}
 
 # Usage:
 # python -m localforge run recipes/examples/code-review.yaml \

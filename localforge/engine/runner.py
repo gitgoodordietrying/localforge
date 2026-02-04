@@ -309,15 +309,17 @@ class WorkflowRunner:
                 ctx.log(f"Step failed, skipping: {e}", "WARNING")
             elif on_failure == "retry":
                 retry_count = step.get("retry_count", 1)
+                last_error = e
                 for i in range(retry_count):
                     ctx.log(f"Retrying ({i + 1}/{retry_count})...")
                     try:
                         outputs = self.tool_registry.execute(tool, action, resolved_inputs, ctx)
                         ctx.set_step_output(step_id, outputs)
                         return
-                    except Exception:
-                        pass
-                raise
+                    except Exception as retry_error:
+                        last_error = retry_error
+                        ctx.log(f"Retry {i + 1} failed: {retry_error}", "WARNING")
+                raise last_error
             elif on_failure == "refine":
                 ctx.log("Validation failed, triggering refinement loop", "INFO")
                 self._execute_refinement(step_id, step, ctx)

@@ -63,11 +63,24 @@ steps:
     inputs:
       path: "{{inputs.output_dir}}"
 
-cleanup:
-  on_success:
-    - action: "preserve"
-      path: "{{temp_dir}}"
-      reason: "output"
+  - id: "save_draft"
+    name: "Save article"
+    tool: "file_ops"
+    action: "write"
+    inputs:
+      path: "{{inputs.output_dir}}/article.md"
+      content: |
+        # {{inputs.topic}}
+
+        {{steps.draft.outputs.response}}
+
+  - id: "save_summary"
+    name: "Save summary"
+    tool: "file_ops"
+    action: "write"
+    inputs:
+      path: "{{inputs.output_dir}}/summary.txt"
+      content: "{{steps.summary.outputs.response}}"
 
 # Usage:
 # python -m localforge run recipes/examples/text-pipeline.yaml \

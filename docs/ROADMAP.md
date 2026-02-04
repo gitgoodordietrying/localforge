@@ -45,7 +45,7 @@ LocalForge follows a **CEO / Manager / Worker** hierarchy:
 | Built-in tools | 11 | ollama, sd_client, image_processor, validator, file_ops, batch, blender, ffmpeg, musicgen, acestep, script |
 | Recipes | 11 | 3 getting-started, 4 examples, 4 game-dev domain, 1 template |
 | CLI commands | 6 | run, list, health, system, init, history |
-| Test suite | 120+ | config, context, tool discovery, recipe validation, system info |
+| Test suite | 119 | config, context, tool discovery, recipe validation, system info |
 | CI matrix | 9 jobs + lint + smoke | 3 OS × 3 Python versions, ruff lint, recipe smoke test |
 | Agent configs | 4 | Claude Code, Codex, Cursor, generic |
 
@@ -148,12 +148,12 @@ class SystemInfo:
         """Check Blender, FFmpeg, whisper, etc. via shutil.which()."""
         ...
 
-    def can_run_model(self, model: str, vram_budget: dict) -> bool:
+    def can_run_model(self, model: str, category: str = "ollama") -> bool:
         """Check if a model fits within available VRAM."""
         ...
 
-    def recommend_model(self, task: str) -> str:
-        """Suggest the best model for a task given hardware constraints."""
+    def recommend_models(self, task: str = "general") -> list:
+        """Suggest models for a task given hardware constraints."""
         ...
 
     def summary(self) -> dict:

@@ -76,11 +76,20 @@ steps:
         {{inputs.text}}
 
   - id: "save_output"
-    name: "Create output directory"
+    name: "Save extracted data"
     tool: "file_ops"
-    action: "mkdir"
+    action: "write"
     inputs:
-      path: "{{temp_dir}}/extracted"
+      path: "{{temp_dir}}/extracted.{{inputs.format}}"
+      content: "{{steps.extract.outputs.response}}"
+
+  - id: "save_validation"
+    name: "Save validation result"
+    tool: "file_ops"
+    action: "write"
+    inputs:
+      path: "{{temp_dir}}/validation.txt"
+      content: "{{steps.validate.outputs.response}}"
 
 cleanup:
   on_success:

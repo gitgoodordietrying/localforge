@@ -14,10 +14,23 @@ def handle(action: str, inputs: dict, ctx) -> dict:
     if action != "foreach":
         raise ValueError(f"Unknown batch action: {action}")
 
-    # Parse items list
+    # Parse items list — may be a real list, a comma-separated string,
+    # or a stringified Python list from variable resolution.
     items_input = inputs.get("items", "")
-    if isinstance(items_input, str):
-        items = [item.strip() for item in items_input.split(",") if item.strip()]
+    if isinstance(items_input, list):
+        items = items_input
+    elif isinstance(items_input, str):
+        s = items_input.strip()
+        if s.startswith("[") and s.endswith("]"):
+            # Stringified Python list: "['a.png', 'b.png']"
+            import ast
+            try:
+                parsed = ast.literal_eval(s)
+                items = list(parsed) if isinstance(parsed, (list, tuple)) else [s]
+            except (ValueError, SyntaxError):
+                items = [item.strip() for item in s.split(",") if item.strip()]
+        else:
+            items = [item.strip() for item in s.split(",") if item.strip()]
     else:
         items = list(items_input)
 

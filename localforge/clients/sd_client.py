@@ -98,16 +98,13 @@ class SDClient:
             **options,
         }
 
-        try:
-            response = requests.post(
-                f"{self.host}/sdapi/v1/txt2img",
-                json=payload,
-                timeout=self.timeout,
-            )
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            return {"images": [], "parameters": payload, "info": str(e)}
+        response = requests.post(
+            f"{self.host}/sdapi/v1/txt2img",
+            json=payload,
+            timeout=self.timeout,
+        )
+        response.raise_for_status()
+        return response.json()
 
     def img2img(
         self,
@@ -150,16 +147,13 @@ class SDClient:
             **options,
         }
 
-        try:
-            response = requests.post(
-                f"{self.host}/sdapi/v1/img2img",
-                json=payload,
-                timeout=self.timeout,
-            )
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            return {"images": [], "parameters": payload, "info": str(e)}
+        response = requests.post(
+            f"{self.host}/sdapi/v1/img2img",
+            json=payload,
+            timeout=self.timeout,
+        )
+        response.raise_for_status()
+        return response.json()
 
     def get_samplers(self) -> List[Dict[str, Any]]:
         """Get available samplers."""
