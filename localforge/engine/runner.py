@@ -343,7 +343,9 @@ class WorkflowRunner:
 
         if not refinement_config:
             ctx.refinement_active = False
-            raise ValueError(f"Validation failed and no refinement defined for step {failed_step_id}")
+            raise ValueError(
+                f"Validation failed and no refinement defined for step {failed_step_id}"
+            )
 
         refinement_steps = refinement_config.get("steps", [])
         if not refinement_steps:

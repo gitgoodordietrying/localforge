@@ -1,16 +1,16 @@
 """Tests for engine/config.py"""
 
+# Ensure project root is importable
+import sys
 import tempfile
 from pathlib import Path
 
 import pytest
 import yaml
 
-# Ensure project root is importable
-import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from localforge.engine.config import Config, reset_config, get_config, _deep_merge, _expand_path
+from localforge.engine.config import Config, _deep_merge, _expand_path, get_config, reset_config
 
 
 @pytest.fixture(autouse=True)

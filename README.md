@@ -222,7 +222,7 @@ The engine auto-discovers tools in the `localforge/tools/` directory.
 
 **"Blender not found"** — Set the path in `localforge.yaml` under `services.blender.path`, or add Blender to your system PATH.
 
-**"Recipe not found"** — Use the full relative path: `python -m localforge run recipes/examples/game-sprite.yaml`. Run `python -m localforge list` to see all available recipes.
+**"Recipe not found"** — Use the full relative path: `python -m localforge run recipes/getting-started/hello-localforge.yaml`. Run `python -m localforge list` to see all available recipes.
 
 **"Missing required inputs"** — Check what the recipe needs: `python -m localforge run <recipe> --list-inputs`.
 

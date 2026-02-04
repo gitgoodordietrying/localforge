@@ -136,7 +136,7 @@ cleanup:
       reason: "debug"
 
 # Usage:
-# python -m localforge run recipes/examples/tileset.yaml \
+# python -m localforge run recipes/domains/game-dev/tileset.yaml \
 #   --input "theme=grass" \
 #   --input "output_path=./grass_tile.png" \
 #   --input "preview_path=./grass_preview.png" \

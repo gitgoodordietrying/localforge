@@ -88,6 +88,6 @@ cleanup:
       path: "{{temp_dir}}"
 
 # Usage:
-# python -m localforge run recipes/examples/music-track.yaml \
+# python -m localforge run recipes/domains/game-dev/music-track.yaml \
 #   --input "genre=orchestral" --input "mood=epic" \
 #   --input "output_path=./epic_theme.wav" --auto-approve

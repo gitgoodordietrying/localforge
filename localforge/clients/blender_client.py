@@ -144,23 +144,31 @@ bpy.ops.render.render(animation=True)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         ext = output_path.suffix.lower()
 
+        r = size / 2
         shape_ops = {
             "cube": f"bpy.ops.mesh.primitive_cube_add(size={size})",
-            "sphere": f"bpy.ops.mesh.primitive_uv_sphere_add(radius={size/2}, segments=32, ring_count=16)",
-            "cylinder": f"bpy.ops.mesh.primitive_cylinder_add(radius={size/2}, depth={size})",
-            "cone": f"bpy.ops.mesh.primitive_cone_add(radius1={size/2}, depth={size})",
-            "torus": f"bpy.ops.mesh.primitive_torus_add(major_radius={size/2}, minor_radius={size/4})",
+            "sphere": (
+                f"bpy.ops.mesh.primitive_uv_sphere_add("
+                f"radius={r}, segments=32, ring_count=16)"
+            ),
+            "cylinder": f"bpy.ops.mesh.primitive_cylinder_add(radius={r}, depth={size})",
+            "cone": f"bpy.ops.mesh.primitive_cone_add(radius1={r}, depth={size})",
+            "torus": (
+                f"bpy.ops.mesh.primitive_torus_add("
+                f"major_radius={r}, minor_radius={size/4})"
+            ),
             "plane": f"bpy.ops.mesh.primitive_plane_add(size={size})",
         }
 
         if shape not in shape_ops:
             raise ValueError(f"Unknown shape: {shape}. Options: {list(shape_ops.keys())}")
 
+        op = f'filepath=r"{output_path}"'
         export_ops = {
-            ".glb": f'bpy.ops.export_scene.gltf(filepath=r"{output_path}", export_format="GLB")',
-            ".gltf": f'bpy.ops.export_scene.gltf(filepath=r"{output_path}", export_format="GLTF_SEPARATE")',
-            ".fbx": f'bpy.ops.export_scene.fbx(filepath=r"{output_path}")',
-            ".obj": f'bpy.ops.wm.obj_export(filepath=r"{output_path}")',
+            ".glb": f"bpy.ops.export_scene.gltf({op}, export_format=\"GLB\")",
+            ".gltf": f"bpy.ops.export_scene.gltf({op}, export_format=\"GLTF_SEPARATE\")",
+            ".fbx": f"bpy.ops.export_scene.fbx({op})",
+            ".obj": f"bpy.ops.wm.obj_export({op})",
         }
 
         if ext not in export_ops:

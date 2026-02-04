@@ -22,13 +22,14 @@ python -m pytest tests/
 1. Fork the repo and create a branch from `main`
 2. Make your changes
 3. Add tests for new functionality
-4. Run `python -m pytest tests/` and ensure all tests pass
-5. Update documentation if you changed behavior
-6. Submit a PR with a clear description of what changed and why
+4. Run `ruff check localforge/ tests/` and fix any lint errors
+5. Run `python -m pytest tests/` and ensure all tests pass
+6. Update documentation if you changed behavior
+7. Submit a PR with a clear description of what changed and why
 
 ## Adding a New Tool
 
-1. Create `tools/my_tool.py` implementing the tool interface:
+1. Create `localforge/tools/my_tool.py` implementing the tool interface:
    ```python
    TOOL_NAME = "my_tool"
    TOOL_ACTIONS = ["action_name"]

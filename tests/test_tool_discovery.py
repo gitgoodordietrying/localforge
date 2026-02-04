@@ -49,6 +49,7 @@ class TestToolExecution:
     def test_file_ops_mkdir(self, registry):
         """file_ops.mkdir should work without any services."""
         import shutil
+
         from localforge.engine.runner import WorkflowContext
 
         ctx = WorkflowContext({"name": "test"}, {}, run_base_dir="./test_runs")

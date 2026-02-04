@@ -13,9 +13,10 @@ Usage:
 """
 
 import base64
-import requests
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
+
+import requests
 
 
 class SDClient:
@@ -41,8 +42,7 @@ class SDClient:
             )
             response.raise_for_status()
             return response.json()
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching models: {e}")
+        except requests.exceptions.RequestException:
             return []
 
     def get_current_model(self) -> Optional[str]:

@@ -41,7 +41,8 @@ def cmd_run(args):
         for inp in recipe.get("inputs", []):
             req = "*" if inp.get("required", False) else " "
             default = f" (default: {inp.get('default')})" if "default" in inp else ""
-            choices = f" [{', '.join(str(c) for c in inp.get('choices', []))}]" if "choices" in inp else ""
+            choice_list = inp.get("choices", [])
+            choices = f" [{', '.join(str(c) for c in choice_list)}]" if choice_list else ""
             print(f"  {req} {inp['name']}: {inp.get('description', '')}{choices}{default}")
         return
 
@@ -81,7 +82,10 @@ def cmd_run(args):
 
 def cmd_list(args):
     """List available recipes."""
-    recipes_dir = Path(args.directory) if args.directory else Path(__file__).parent.parent / "recipes"
+    if args.directory:
+        recipes_dir = Path(args.directory)
+    else:
+        recipes_dir = Path(__file__).parent.parent / "recipes"
 
     if not recipes_dir.exists():
         print(f"Directory not found: {recipes_dir}")

@@ -192,7 +192,8 @@ class Config:
 
     @property
     def persistence_db_path(self) -> str:
-        return _expand_path(self._raw.get("persistence", {}).get("db_path", "~/.localforge/runs.db"))
+        db = self._raw.get("persistence", {}).get("db_path", "~/.localforge/runs.db")
+        return _expand_path(db)
 
     def get(self, key: str, default: Any = None) -> Any:
         """Get a raw config value by dot-separated key."""

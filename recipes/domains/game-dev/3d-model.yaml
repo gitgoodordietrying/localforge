@@ -44,5 +44,5 @@ cleanup:
       path: "{{temp_dir}}"
 
 # Usage:
-# python -m localforge run recipes/examples/3d-model.yaml \
+# python -m localforge run recipes/domains/game-dev/3d-model.yaml \
 #   --input "shape=sphere" --input "output_path=./sphere.glb" --auto-approve

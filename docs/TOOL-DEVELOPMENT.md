@@ -72,7 +72,7 @@ def handle(action, inputs, ctx):
     output_path = ctx.temp_dir / "result.txt"
 
     # Access config
-    from engine.config import get_config
+    from localforge.engine.config import get_config
     config = get_config()
     host = config.service("my_service").get("host", "localhost")
 ```
@@ -90,7 +90,7 @@ The `ToolRegistry` scans `localforge/tools/*_tool.py` at startup. If your module
 Use `engine.config.get_config()` to read service configuration from `localforge.yaml`. This keeps connection details out of tool code and lets users configure their setup.
 
 ```python
-from engine.config import get_config
+from localforge.engine.config import get_config
 
 config = get_config()
 host = config.service("my_api").get("host", "http://localhost:9000")

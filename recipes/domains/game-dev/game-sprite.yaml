@@ -107,7 +107,7 @@ cleanup:
       reason: "debug"
 
 # Usage:
-# python -m localforge run recipes/examples/game-sprite.yaml \
+# python -m localforge run recipes/domains/game-dev/game-sprite.yaml \
 #   --input "description=spaceship" \
 #   --input "output_path=./spaceship.png" \
 #   --auto-approve
