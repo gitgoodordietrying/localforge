@@ -51,6 +51,9 @@ Repository = "https://github.com/gitgoodordietrying/localforge"
 [tool.setuptools.packages.find]
 include = ["localforge*"]
 
+[tool.setuptools.package-data]
+localforge = ["data/*.yaml", "py.typed"]
+
 [tool.ruff]
 target-version = "py39"
 line-length = 100

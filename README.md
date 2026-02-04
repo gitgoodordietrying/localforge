@@ -121,15 +121,15 @@ Each step supports `on_failure` strategies:
 
 ## Built-in Tools
 
-| Tool | Actions | Service Required |
-|------|---------|-----------------|
+| Tool | Actions | Requires |
+|------|---------|----------|
 | `ollama` | generate | Ollama |
-| `sd_client` | txt2img, img2img, get_models | Stable Diffusion WebUI |
-| `image_processor` | remove_bg, resize, make_seamless, tile_preview, create_idle_animation, create_directional_sheet, assemble_sheet | None (Pillow) |
-| `validator` | check_image, check_tileset, check_sprites | None (Pillow + numpy) |
-| `file_ops` | copy, move, delete, mkdir, list | None |
+| `sd_client` | txt2img, img2img, get_models | SD WebUI |
+| `image_processor` | remove_bg, resize, batch_remove_bg, make_seamless, tile_preview, create_idle_animation, create_directional_sheet, assemble_sheet | Pillow |
+| `validator` | check_image, check_tileset, check_sprites | Pillow + numpy |
+| `file_ops` | copy, move, delete, mkdir, copy_multiple, list | None |
 | `batch` | foreach | None |
-| `blender` | render, create_primitive, create_text_3d, generate_texture, create_dice | Blender |
+| `blender` | render, render_animation, create_primitive, create_text_3d, generate_texture, render_isometric, create_dice, create_dice_set | Blender |
 | `ffmpeg` | convert, normalize, loop, trim, get_duration | FFmpeg |
 | `musicgen` | generate | MusicGen |
 | `acestep` | generate | ACE-Step |

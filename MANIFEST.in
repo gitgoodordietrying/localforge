@@ -1,0 +1,2 @@
+include localforge/data/*.yaml
+include localforge/py.typed

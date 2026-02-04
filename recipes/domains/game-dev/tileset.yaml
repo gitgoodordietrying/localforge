@@ -2,7 +2,7 @@
 # Generates tileable textures for 2D games with validation and refinement.
 # Demonstrates: refinement loops, seamless validation, tile preview
 
-name: "tileset-basic"
+name: "tileset"
 version: "1.0"
 description: "Generate seamless tileable game textures"
 

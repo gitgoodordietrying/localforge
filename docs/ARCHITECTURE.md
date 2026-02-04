@@ -6,11 +6,15 @@ LocalForge is a workflow engine that executes YAML-defined pipelines by dispatch
 
 ```
 User/Agent → CLI (__main__.py)
-                → WorkflowRunner (engine/runner.py)
-                    → ToolRegistry (auto-discovers tools/*.py)
-                        → Tool handlers (ollama, sd, image, etc.)
-                            → Service clients (clients/*.py)
-                                → External services (Ollama, SD, Blender, etc.)
+                ├→ WorkflowRunner (engine/runner.py)
+                │   → ToolRegistry (auto-discovers tools/*.py)
+                │       → Tool handlers (ollama, sd, image, etc.)
+                │           → Service clients (clients/*.py)
+                │               → External services (Ollama, SD, Blender, etc.)
+                └→ SystemInfo (engine/system_info.py)
+                    → Hardware detection (CPU, RAM, GPU/VRAM)
+                    → Service probes (Ollama, SD, ComfyUI)
+                    → Model profiles (data/model_profiles.yaml)
 ```
 
 ## Core Components
@@ -42,6 +46,16 @@ Reads from `localforge.yaml` with fallback to `~/.localforge/config.yaml` and bu
 
 ### Persistence (`engine/persistence.py`)
 SQLite-based tracking of workflow runs, step executions, and assets. Enables history viewing and future resume capability.
+
+### SystemInfo (`engine/system_info.py`)
+Detects hardware, running services, and installed CLI tools. Provides:
+- Hardware profiling: CPU cores, RAM, GPU name and VRAM (via `nvidia-smi`)
+- Service checks: Ollama, SD WebUI, ComfyUI (HTTP probes)
+- Tool detection: Blender, FFmpeg, Whisper, etc. (via `shutil.which`)
+- Model recommendations: suggests Ollama models and SD configs that fit available VRAM
+- VRAM budgets loaded from `data/model_profiles.yaml`
+
+Used by the `python -m localforge system` CLI command.
 
 ## Variable Resolution
 

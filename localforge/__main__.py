@@ -115,39 +115,39 @@ def cmd_list(args):
 
 def cmd_health(args):
     """Check service health."""
-    import requests
+    from .engine.system_info import SystemInfo
 
-    checks = {
-        "Ollama": ("http://localhost:11434/api/tags", "GET"),
-        "SD WebUI": ("http://localhost:7860/sdapi/v1/sd-models", "GET"),
-    }
+    info = SystemInfo()
 
     print("LocalForge Service Health\n")
 
-    for name, (url, method) in checks.items():
+    print("Services:")
+    for key, svc in info.services.items():
+        status = "RUNNING" if svc.get("running") else "NOT RUNNING"
+        print(f"  {svc['label']}: {status}")
+
+    print("\nTools:")
+    for name, tool_info in info.tools.items():
+        if tool_info["found"]:
+            print(f"  {name}: FOUND ({tool_info['path']})")
+        else:
+            print(f"  {name}: NOT FOUND")
+
+    # Check Python packages
+    print("\nPython Packages:")
+    packages = [
+        ("yaml", "REQUIRED"),
+        ("requests", "REQUIRED"),
+        ("PIL", "OPTIONAL"),
+        ("numpy", "OPTIONAL"),
+        ("rembg", "OPTIONAL"),
+    ]
+    for pkg, level in packages:
         try:
-            resp = requests.get(url, timeout=3)
-            if resp.status_code == 200:
-                print(f"  {name}: RUNNING ({url})")
-            else:
-                print(f"  {name}: ERROR (status {resp.status_code})")
-        except requests.exceptions.RequestException:
-            print(f"  {name}: NOT RUNNING")
-
-    # Check Blender
-    import shutil
-    blender = shutil.which("blender")
-    if blender:
-        print(f"  Blender: FOUND ({blender})")
-    else:
-        print("  Blender: NOT FOUND")
-
-    # Check FFmpeg
-    ffmpeg = shutil.which("ffmpeg")
-    if ffmpeg:
-        print(f"  FFmpeg: FOUND ({ffmpeg})")
-    else:
-        print("  FFmpeg: NOT FOUND")
+            __import__(pkg)
+            print(f"  {pkg}: INSTALLED")
+        except ImportError:
+            print(f"  {pkg}: NOT INSTALLED ({level})")
 
     print()
 
